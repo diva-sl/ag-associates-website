@@ -94,4 +94,4 @@ Designed to easily support future upgrades such as:
 Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/ag-associates-website.git
+git clone https://github.com/diva-sl/ag-associates-website.git
