@@ -39,3 +39,59 @@ Designed with a focus on trust, clarity, and high conversion — ideal for finan
 
 ## 📂 Project Structure
 
+src/
+│
+├── components/
+│ ├── Header
+│ ├── Hero
+│ ├── About
+│ ├── Services
+│ ├── WhyChooseUs
+│ ├── Contact
+│ ├── Footer
+│
+├── ui/
+│ ├── Button
+│ ├── Toast
+│
+├── lib/
+│ ├── utils
+│ ├── constants
+│ ├── scroll
+│
+└── App.jsx
+
+---
+
+## 🎯 Key Highlights
+
+### ⭐ Premium User Experience
+- Smooth scrolling navigation  
+- Micro-interactions  
+- Glass-effect UI  
+- Gradient accents  
+- Floating animations  
+
+### ⭐ Performance Optimized
+- Built with **Vite** for lightning-fast load times  
+- Optimized animation rendering  
+- Clean component architecture  
+
+### ⭐ Scalable Architecture
+Designed to easily support future upgrades such as:
+
+- Online appointment booking  
+- Client dashboards  
+- Payment gateway integration  
+- Blog system for tax updates  
+- CRM connectivity  
+- Multi-language support  
+
+---
+
+## ⚙️ Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/YOUR_USERNAME/ag-associates-website.git
