@@ -39,6 +39,7 @@ Designed with a focus on trust, clarity, and high conversion — ideal for finan
 
 ## 📂 Project Structure
 
+```bash
 src/
 │
 ├── components/
@@ -60,6 +61,7 @@ src/
 │ ├── scroll
 │
 └── App.jsx
+```
 
 ---
 
@@ -86,7 +88,6 @@ Designed to easily support future upgrades such as:
 - Blog system for tax updates  
 - CRM connectivity  
 - Multi-language support  
-
 ---
 
 ## ⚙️ Installation
