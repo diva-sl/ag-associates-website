@@ -10,17 +10,11 @@ import {
   Linkedin,
   Instagram,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { navLinks } from "@/lib/constants";
 import { scrollTo } from "@/lib/scroll";
 
 const Footer = () => {
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      // element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   const services = [
     "Direct Taxation",
     "GST Compliance",
@@ -29,12 +23,6 @@ const Footer = () => {
     "Tax Advisory",
     "Business Consulting",
   ];
-  // const socialLinks = [
-  //   { icon: Facebook, href: "#", label: "Facebook" },
-  //   { icon: Twitter, href: "#", label: "Twitter" },
-  //   { icon: Linkedin, href: "#", label: "LinkedIn" },
-  //   { icon: Instagram, href: "#", label: "Instagram" },
-  // ];
 
   const socialLinks = [
     {
@@ -77,16 +65,19 @@ const Footer = () => {
                 AG & ASSOCIATES
               </span>
             </div>
+
             <p className="text-white/80 leading-relaxed">
               Your trusted partner for comprehensive tax consultancy services.
             </p>
+
+            {/* Social Links */}
             <div className="flex space-x-4">
               {socialLinks.map((social, index) => (
                 <motion.a
+                  key={index}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  // whileHover={{ scale: 1.1 }}
                   whileHover={{ y: -5 }}
                   className="p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors duration-200"
                   aria-label={social.label}
@@ -105,6 +96,7 @@ const Footer = () => {
             viewport={{ once: true }}
           >
             <h3 className="text-xl font-bold text-white mb-6">Quick Links</h3>
+
             <ul className="space-y-3">
               {navLinks.map((link) => (
                 <li key={link.name}>
@@ -127,12 +119,10 @@ const Footer = () => {
             viewport={{ once: true }}
           >
             <h3 className="text-xl font-bold text-white mb-6">Our Services</h3>
+
             <ul className="space-y-3">
               {services.map((service, index) => (
                 <li key={index}>
-                  {/* <span className="text-white/80 hover:text-white transition-colors duration-200 cursor-pointer"> */}
-                  {/* {service}
-                  </span> */}
                   <button
                     onClick={() => scrollTo("contact")}
                     className="text-white/80 hover:text-white transition-colors duration-200"
@@ -152,6 +142,7 @@ const Footer = () => {
             viewport={{ once: true }}
           >
             <h3 className="text-xl font-bold text-white mb-6">Contact Info</h3>
+
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-blue-400 mt-1" />
@@ -160,23 +151,22 @@ const Footer = () => {
                   <p className="text-white/80">Tamil Nadu - 641608</p>
                 </div>
               </div>
+
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-blue-400" />
                 <a
                   href="tel:+917373476048"
-                  className="text-white/90 hover:text-white"
+                  className="text-white/90 hover:text-white transition-colors"
                 >
                   +91 73734 76048
                 </a>
-
-                {/* <span className="text-white/90">+91 73734 76048</span> */}
               </div>
+
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-blue-400" />
-                {/* <span className="text-white/90">info@agandassociates.org</span> */}
                 <a
                   href="mailto:info@agandassociates.org"
-                  className="text-white/90 hover:text-white"
+                  className="text-white/90 hover:text-white transition-colors"
                 >
                   info@agandassociates.org
                 </a>
@@ -185,6 +175,7 @@ const Footer = () => {
           </motion.div>
         </div>
 
+        {/* Bottom Section */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -196,13 +187,24 @@ const Footer = () => {
             <p className="text-white/70 text-center md:text-left">
               © {new Date().getFullYear()} AG & ASSOCIATES. All rights reserved.
             </p>
+
             <div className="flex space-x-6 text-sm">
-              <span className="text-white/70 hover:text-white cursor-pointer transition-colors duration-200">
+              <Link
+                to="/privacy-policy"
+                className="text-white/70 hover:text-white transition-colors duration-200"
+              >
                 Privacy Policy
-              </span>
-              <span className="text-white/70 hover:text-white cursor-pointer transition-colors duration-200">
-                Terms of Service
-              </span>
+              </Link>
+
+              <Link
+                to="/terms-and-conditions"
+                className="text-white/70 hover:text-white transition-colors duration-200"
+              >
+                Terms & Conditions
+              </Link>
+              <Link to="/disclaimer" className="text-white/70 hover:text-white">
+                Disclaimer
+              </Link>
             </div>
           </div>
         </motion.div>
