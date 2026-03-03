@@ -1,7 +1,8 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import { Helmet } from "react-helmet";
 import { Toaster } from "@/ui/toaster";
+
+import { Helmet } from "react-helmet-async";
 
 import Disclaimer from "@/components/Disclaimer";
 import Header from "@/components/Header";
