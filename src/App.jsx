@@ -84,6 +84,7 @@ function App() {
           <Route path="/terms-and-conditions" element={<Terms />} />
           <Route path="/google-success" element={<GoogleSuccess />} />
           <Route path="/auth" element={<AuthPage />} />
+          {/* <Route path="/profile" element={<Profile />} /> */}
 
           <Route
             path="/profile"
