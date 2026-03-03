@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from "@/ui/toaster";
 
-import { Helmet } from "react-helmet-async";
+import { HelmetProvider } from "react-helmet-async";
 
 import Disclaimer from "@/components/Disclaimer";
 import Header from "@/components/Header";
@@ -43,7 +43,7 @@ function HomePage() {
 function App() {
   return (
     <>
-      <Helmet>
+      <HelmetProvider>
         <title>AG & ASSOCIATES - Expert Tax Consultancy Services</title>
         <meta
           name="description"
@@ -68,7 +68,7 @@ function App() {
           }
           `}
         </script>
-      </Helmet>
+      </HelmetProvider>
 
       <div className="min-h-screen bg-gradient-to-br from-[#511D43] to-[#901E3E]">
         <ScrollProgress />
