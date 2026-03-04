@@ -24,6 +24,7 @@ import AuthPage from "./pages/AuthPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import FloatingWhatsApp from "./components/FloatingWhatsApp";
 import BackToTop from "./components/BackToTop";
+import Profile from "./pages/Profile";
 
 /* ✅ Home Page */
 function HomePage() {
@@ -90,7 +91,7 @@ function App() {
             path="/profile"
             element={
               <ProtectedRoute>
-                <div className="text-white p-20">Profile Page</div>
+                <Profile />
               </ProtectedRoute>
             }
           />
