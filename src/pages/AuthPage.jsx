@@ -73,14 +73,12 @@ export default function AuthPage() {
     <div className="min-h-screen grid lg:grid-cols-2 bg-gradient-to-br from-[#511D43] to-[#901E3E]">
       {/* ================= LEFT SIDE ================= */}
 
-      {/* ================= LEFT SIDE ================= */}
-
       <div className="hidden lg:flex relative flex-col justify-center items-center text-white px-16 py-20 overflow-hidden">
         {/* Floating Glow Background */}
         <motion.div
           animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ repeat: Infinity, duration: 6 }}
-          className="absolute w-[420px] h-[420px] bg-white/10 rounded-full blur-3xl"
+          className="absolute w-[420px] h-[420px] bg-white/10 rounded-full blur-3xl z-0"
         />
 
         {/* Content Wrapper */}
@@ -104,16 +102,15 @@ export default function AuthPage() {
           <motion.div
             animate={{ y: [0, -15, 0] }}
             transition={{ repeat: Infinity, duration: 5 }}
-            className="w-[360px]"
+            className="w-[360px] h-[360px]"
           >
-            <Lottie animationData={animationData} loop autoplay />
+            <Lottie
+              animationData={animationData}
+              loop={true}
+              autoplay={true}
+              style={{ width: "100%", height: "100%" }}
+            />
           </motion.div>
-          <motion.div
-            whileHover={{ rotateY: 5 }}
-            animate={{ y: [0, -15, 0] }}
-            transition={{ repeat: Infinity, duration: 5 }}
-            className="w-[360px] perspective-1000"
-          ></motion.div>
         </div>
       </div>
       {/* ================= RIGHT SIDE ================= */}

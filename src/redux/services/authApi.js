@@ -55,6 +55,13 @@ export const authApi = createApi({
       }),
       invalidatesTags: ["User"],
     }),
+    removeAvatar: builder.mutation({
+      query: () => ({
+        url: "/auth/avatar",
+        method: "DELETE",
+      }),
+      invalidatesTags: ["User"],
+    }),
 
     /* ================= PASSWORD ================= */
 
@@ -67,12 +74,24 @@ export const authApi = createApi({
     }),
 
     /* ================= DOCUMENT ================= */
+    getDocuments: builder.query({
+      query: () => ({
+        url: "/auth/documents",
+        method: "GET",
+      }),
+    }),
 
     uploadDocument: builder.mutation({
       query: (formData) => ({
         url: "/auth/upload-document",
         method: "POST",
         body: formData,
+      }),
+    }),
+    deleteDocument: builder.mutation({
+      query: (id) => ({
+        url: `/auth/document/${id}`,
+        method: "DELETE",
       }),
     }),
   }),
@@ -85,6 +104,9 @@ export const {
   useGetProfileQuery,
   useUpdateProfileMutation,
   useUploadAvatarMutation,
+  useRemoveAvatarMutation,
+  useGetDocumentsQuery,
   useUploadDocumentMutation,
+  useDeleteDocumentMutation,
   useChangePasswordMutation,
 } = authApi;

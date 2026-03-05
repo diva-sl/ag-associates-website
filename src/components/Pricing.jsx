@@ -4,6 +4,10 @@ import { CheckCircle, X } from "lucide-react";
 import LegalBanner from "@/components/LegalBanner";
 import Breadcrumb from "@/components/Breadcrumb";
 import { useState, useEffect } from "react";
+import {
+  useCreateOrderMutation,
+  useVerifyPaymentMutation,
+} from "@/redux/services/transactionApi";
 
 /* ================= PLAN DATA ================= */
 
@@ -167,6 +171,46 @@ const CountUpPrice = ({ value }) => {
 
 export default function Pricing() {
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [createOrder] = useCreateOrderMutation();
+  const [verifyPayment] = useVerifyPaymentMutation();
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  const handlePayment = async () => {
+    try {
+      const res = await createOrder({
+        amount: selectedPlan.price,
+        planName: selectedPlan.name,
+      }).unwrap();
+
+      const order = res.order;
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY,
+        amount: order.amount,
+        currency: "INR",
+        name: "AG & Associates",
+        description: selectedPlan.name,
+        order_id: order.id,
+
+        handler: async function (response) {
+          await verifyPayment(response);
+
+          setPaymentSuccess(true);
+
+          setTimeout(() => {
+            setPaymentSuccess(false);
+            setSelectedPlan(null);
+          }, 3000);
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+
+      rzp.open();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     document.body.style.overflow = selectedPlan ? "hidden" : "auto";
@@ -281,10 +325,12 @@ export default function Pricing() {
         </div>
       </section>
 
+      {/* ================= PAYMENT MODAL ================= */}
+
       <AnimatePresence>
         {selectedPlan && (
           <motion.div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -293,23 +339,58 @@ export default function Pricing() {
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
-              className="bg-gradient-to-br from-[#511D43] to-[#901E3E] p-10 rounded-3xl w-full max-w-md border border-white/20 shadow-2xl text-white"
+              className="bg-gradient-to-br from-[#511D43] to-[#901E3E] p-6 md:p-10 rounded-2xl md:rounded-3xl w-full max-w-md border border-white/20 shadow-2xl text-white"
             >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold">{selectedPlan.name}</h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg md:text-2xl font-bold">
+                  {selectedPlan.name}
+                </h3>
+
                 <X
                   onClick={() => setSelectedPlan(null)}
                   className="cursor-pointer"
                 />
               </div>
 
-              <p className="mb-6">
+              <p className="mb-6 text-sm md:text-base">
                 Plan Price: ₹{selectedPlan.price.toLocaleString()}
               </p>
 
-              <button className="w-full py-3 rounded-xl bg-white text-[#511D43] font-semibold hover:bg-white/90 transition-all">
+              <button
+                onClick={handlePayment}
+                className="w-full py-2 md:py-3 rounded-lg md:rounded-xl bg-white text-[#511D43] font-semibold hover:bg-white/90 transition-all"
+              >
                 Proceed to Payment
               </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= SUCCESS MODAL ================= */}
+
+      <AnimatePresence>
+        {paymentSuccess && (
+          <motion.div
+            className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              className="bg-white p-6 md:p-10 rounded-2xl text-center max-w-sm w-full"
+            >
+              <CheckCircle className="mx-auto text-green-500 w-12 h-12 mb-4" />
+
+              <h3 className="text-lg md:text-xl font-bold mb-2">
+                Payment Successful
+              </h3>
+
+              <p className="text-gray-600 text-sm">
+                Thank you for choosing AG & Associates
+              </p>
             </motion.div>
           </motion.div>
         )}

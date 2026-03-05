@@ -16,7 +16,7 @@ export default function GoogleSuccess() {
       dispatch(setCredentials({ token }));
       navigate("/");
     }
-  }, []);
+  }, [location, dispatch, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#511D43] to-[#901E3E] text-white">

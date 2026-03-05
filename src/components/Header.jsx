@@ -359,7 +359,10 @@ const Header = () => {
                     onClick={() => setDropdown(!dropdown)}
                     className="w-10 h-10 rounded-full bg-white text-purple-700 flex items-center justify-center font-bold cursor-pointer shadow-md"
                   >
-                    {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                    {/* {user?.name?.charAt(0)?.toUpperCase() || "U"} */}
+                    {user?.name?.[0]?.toUpperCase() ||
+                      user?.email?.[0]?.toUpperCase() ||
+                      "U"}
                   </div>
 
                   {dropdown && (
