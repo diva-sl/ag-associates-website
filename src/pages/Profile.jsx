@@ -213,11 +213,7 @@ const Profile = () => {
             <DashboardCard
               icon={<ShieldCheck />}
               title="Subscription"
-              value={
-                user?.subscription === "none"
-                  ? "Free"
-                  : user?.subscription.toUpperCase()
-              }
+              value={user?.subscription?.toUpperCase?.() || "FREE"}
             />
             <DashboardCard
               icon={<FileBadge />}

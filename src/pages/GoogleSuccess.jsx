@@ -9,12 +9,31 @@ export default function GoogleSuccess() {
   const location = useLocation();
 
   useEffect(() => {
-    const token = new URLSearchParams(location.search).get("token");
+    const params = new URLSearchParams(location.search);
+
+    const token = params.get("token");
+    const name = params.get("name");
+    const email = params.get("email");
+    const avatar = params.get("avatar");
+    const redirect = params.get("redirect");
 
     if (token) {
+      const user = { name, email, avatar };
+
       localStorage.setItem("authToken", token);
-      dispatch(setCredentials({ token }));
-      navigate("/");
+
+      dispatch(
+        setCredentials({
+          token,
+          user,
+        }),
+      );
+
+      if (redirect) {
+        navigate(`/${redirect}`);
+      } else {
+        navigate("/");
+      }
     }
   }, [location, dispatch, navigate]);
 

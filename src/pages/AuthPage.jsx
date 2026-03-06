@@ -7,7 +7,8 @@ import {
 } from "@/redux/services/authApi";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/redux/slices/authSlice";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Lottie from "lottie-react";
 // import animationData from "@/assets/auth-animation.json";
 
@@ -24,6 +25,7 @@ export default function AuthPage() {
   const [register] = useRegisterMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   /* ================= VALIDATION ================= */
 
@@ -51,13 +53,21 @@ export default function AuthPage() {
 
     try {
       setLoading(true);
+
       const response = isLogin
         ? await login(form).unwrap()
         : await register(form).unwrap();
 
       dispatch(setCredentials(response));
       localStorage.setItem("authToken", response.token);
-      navigate("/");
+
+      const redirect = new URLSearchParams(location.search).get("redirect");
+
+      if (redirect) {
+        navigate(`/${redirect}`);
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       alert(err.data?.message || "Authentication failed");
     } finally {
@@ -66,7 +76,14 @@ export default function AuthPage() {
   };
 
   const handleGoogle = () => {
-    window.location.href = "http://localhost:5001/api/auth/google";
+    const API_URL =
+      import.meta.env.MODE === "production"
+        ? "https://ag-associates-backend.onrender.com/api"
+        : "http://localhost:5001/api";
+
+    const redirect = new URLSearchParams(location.search).get("redirect");
+
+    window.location.href = `${API_URL}/auth/google?redirect=${redirect || ""}`;
   };
 
   return (

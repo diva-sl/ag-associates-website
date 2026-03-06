@@ -8,14 +8,16 @@ import {
   useCreateOrderMutation,
   useVerifyPaymentMutation,
 } from "@/redux/services/transactionApi";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 /* ================= PLAN DATA ================= */
 
 const incomeTaxPlans = [
   {
     name: "Essential Tax",
-    // price: 1499,
-    price: 1,
+    price: 1499,
+    // price: 1,
     originalPrice: 2499,
     ideal: "Salaried professionals with single house property.",
     features: [
@@ -68,7 +70,7 @@ const advisoryPlans = [
   {
     name: "Premium Wealth",
     price: 14999,
-    originalPrice: 14999,
+    originalPrice: 29999,
     ideal: "High-income individuals seeking advisory.",
     features: [
       "Advance Tax Planning",
@@ -176,6 +178,18 @@ export default function Pricing() {
   const [verifyPayment] = useVerifyPaymentMutation();
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
+  const { token } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedPlan = localStorage.getItem("pendingPlan");
+
+    if (savedPlan && token) {
+      setSelectedPlan(JSON.parse(savedPlan));
+      localStorage.removeItem("pendingPlan");
+    }
+  }, [token]);
+
   const handlePayment = async () => {
     try {
       const res = await createOrder({
@@ -203,10 +217,15 @@ export default function Pricing() {
             setSelectedPlan(null);
           }, 3000);
         },
+
+        modal: {
+          ondismiss: function () {
+            setSelectedPlan(null);
+          },
+        },
       };
 
       const rzp = new window.Razorpay(options);
-
       rzp.open();
     } catch (error) {
       console.log(error);
@@ -272,7 +291,14 @@ export default function Pricing() {
         </ul>
 
         <button
-          onClick={() => setSelectedPlan(plan)}
+          onClick={() => {
+            if (!token) {
+              localStorage.setItem("pendingPlan", JSON.stringify(plan));
+              navigate("/auth?redirect=pricing");
+            } else {
+              setSelectedPlan(plan);
+            }
+          }}
           className="mt-auto w-full py-3 rounded-xl bg-white text-[#511D43] font-semibold hover:bg-white/90 transition-all"
         >
           Choose Plan

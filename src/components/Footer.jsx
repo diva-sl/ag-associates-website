@@ -159,8 +159,8 @@ const Footer = () => {
               <div className="flex items-start space-x-3">
                 <MapPin size={18} />
                 <div>
-                  <p>Tirupur</p>
-                  <p>Tamil Nadu - 641608</p>
+                  <p>Tamil Nadu</p>
+                  <p>India</p>
                 </div>
               </div>
 
