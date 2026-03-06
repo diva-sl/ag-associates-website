@@ -12,6 +12,10 @@ import {
   useChangePasswordMutation,
   useGetProfileQuery,
 } from "@/redux/services/authApi";
+import {
+  useGetBillingHistoryQuery,
+  useDownloadInvoiceMutation,
+} from "@/redux/services/transactionApi";
 
 import { setCredentials } from "@/redux/slices/authSlice";
 
@@ -30,6 +34,7 @@ import {
   FileBadge,
   Trash2,
   Camera,
+  Download,
 } from "lucide-react";
 
 import LegalBanner from "@/components/LegalBanner";
@@ -42,7 +47,11 @@ const Profile = () => {
   const [editing, setEditing] = useState(false);
   const [documents, setDocuments] = useState([]);
 
-  const { data: profileData } = useGetProfileQuery();
+  const { data: profileData, refetch } = useGetProfileQuery();
+
+  const { data: transactions = [] } = useGetBillingHistoryQuery();
+  const [downloadInvoice] = useDownloadInvoiceMutation();
+
   const [updateProfile] = useUpdateProfileMutation();
   const [uploadAvatar] = useUploadAvatarMutation();
   const [removeAvatar] = useRemoveAvatarMutation();
@@ -165,18 +174,26 @@ const Profile = () => {
   };
 
   /* PASSWORD */
-
   const handlePasswordChange = async (e) => {
     e.preventDefault();
 
-    await changePassword(passwordData);
+    try {
+      await changePassword(passwordData).unwrap();
 
-    alert("Password updated");
+      alert("Password updated successfully");
 
-    setPasswordData({
-      currentPassword: "",
-      newPassword: "",
-    });
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+      });
+    } catch (err) {
+      alert(err?.data?.message || "Password update failed");
+    }
+  };
+
+  const handleDownloadInvoice = async (id) => {
+    const url = `/api/transaction/invoice/${id}`;
+    window.open(url, "_blank");
   };
 
   const maskedAadhaar =
@@ -196,7 +213,11 @@ const Profile = () => {
             <DashboardCard
               icon={<ShieldCheck />}
               title="Subscription"
-              value={user?.subscription || "None"}
+              value={
+                user?.subscription === "none"
+                  ? "Free"
+                  : user?.subscription.toUpperCase()
+              }
             />
             <DashboardCard
               icon={<FileBadge />}
@@ -298,6 +319,18 @@ const Profile = () => {
                 <p className="text-white/70 text-sm">
                   Member since {new Date(user?.createdAt).toDateString()}
                 </p>
+              </div>
+              <div className="mt-2 flex items-center gap-3">
+                <span className="bg-purple-600 text-white text-xs px-3 py-1 rounded-full">
+                  {user?.subscription?.toUpperCase() || "FREE"}
+                </span>
+
+                {user?.subscriptionExpiry && (
+                  <span className="text-white/60 text-sm">
+                    Valid till
+                    {new Date(user.subscriptionExpiry).toLocaleDateString()}
+                  </span>
+                )}
               </div>
             </div>
             {/* PROFILE VIEW */}
@@ -447,7 +480,10 @@ const Profile = () => {
                 <Lock size={18} /> Change Password
               </h3>
 
-              <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <form
+                onSubmit={handlePasswordChange}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              >
                 <Input
                   label="Current Password"
                   type="password"
@@ -475,6 +511,53 @@ const Profile = () => {
                   <GradientButton type="submit">Update Password</GradientButton>
                 </div>
               </form>
+            </div>
+            {/* ================= BILLING HISTORY ================= */}
+
+            <div className="mt-16">
+              <h3 className="text-xl text-white mb-6 flex items-center gap-2">
+                <CreditCard size={18} /> Billing History
+              </h3>
+
+              {transactions.length === 0 ? (
+                <p className="text-white/60">No transactions found.</p>
+              ) : (
+                <div className="space-y-4">
+                  {transactions.map((t) => (
+                    <div
+                      key={t._id}
+                      className="bg-white/10 border border-white/20 rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-white"
+                    >
+                      {/* Plan Info */}
+                      <div>
+                        <p className="font-semibold text-lg">
+                          {t.planName?.toUpperCase()}
+                        </p>
+
+                        <p className="text-sm text-white/60">
+                          {new Date(t.createdAt).toDateString()}
+                        </p>
+                      </div>
+
+                      {/* Amount */}
+                      <div className="text-lg font-semibold">₹{t.amount}</div>
+
+                      {/* Invoice Icon Button */}
+                      <button
+                        onClick={() => handleDownloadInvoice(t._id)}
+                        className="p-2 w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-600 
+  hover:from-blue-600 hover:to-purple-700 
+  text-white rounded-xl shadow-lg 
+  transition-all duration-300 
+  flex items-center justify-center"
+                        title="Download Invoice"
+                      >
+                        <Download size={18} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </motion.div>
         </div>

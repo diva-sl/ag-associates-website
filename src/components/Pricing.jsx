@@ -14,7 +14,8 @@ import {
 const incomeTaxPlans = [
   {
     name: "Essential Tax",
-    price: 1499,
+    // price: 1499,
+    price: 1,
     originalPrice: 2499,
     ideal: "Salaried professionals with single house property.",
     features: [

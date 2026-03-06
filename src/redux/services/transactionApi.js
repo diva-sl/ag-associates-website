@@ -34,6 +34,23 @@ export const transactionApi = createApi({
         method: "GET",
       }),
     }),
+    /* ================= BILLING HISTORY ================= */
+
+    getBillingHistory: builder.query({
+      query: () => ({
+        url: "/transaction/history",
+        method: "GET",
+      }),
+    }),
+
+    /* ================= DOWNLOAD INVOICE ================= */
+
+    downloadInvoice: builder.mutation({
+      query: (id) => ({
+        url: `/transaction/invoice/${id}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -41,4 +58,6 @@ export const {
   useCreateOrderMutation,
   useVerifyPaymentMutation,
   useGetTransactionsQuery,
+  useGetBillingHistoryQuery,
+  useDownloadInvoiceMutation,
 } = transactionApi;
