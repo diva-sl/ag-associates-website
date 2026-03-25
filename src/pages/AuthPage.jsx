@@ -47,6 +47,15 @@ export default function AuthPage() {
 
   /* ================= SUBMIT ================= */
 
+  useEffect(() => {
+    const BASE_URL =
+      import.meta.env.MODE === "production"
+        ? "https://ag-associates-backend.onrender.com"
+        : "http://localhost:5001";
+
+    fetch(BASE_URL).catch(() => {});
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -100,13 +109,14 @@ export default function AuthPage() {
     const redirect = new URLSearchParams(location.search).get("redirect");
 
     try {
-      // 🔥 Wake up backend first
+      await fetch(BASE_URL);
       await fetch(BASE_URL);
 
-      // ⏩ Then redirect to Google login
+      await new Promise((res) => setTimeout(res, 2500));
+
       window.location.href = `${API_URL}/auth/google?redirect=${redirect || ""}`;
     } catch (err) {
-      console.error("Wake up failed", err);
+      window.location.href = `${API_URL}/auth/google?redirect=${redirect || ""}`;
     }
   };
 
