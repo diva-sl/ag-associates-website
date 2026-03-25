@@ -75,15 +75,39 @@ export default function AuthPage() {
     }
   };
 
-  const handleGoogle = () => {
+  // const handleGoogle = () => {
+  //   const API_URL =
+  //     import.meta.env.MODE === "production"
+  //       ? "https://ag-associates-backend.onrender.com/api"
+  //       : "http://localhost:5001/api";
+
+  //   const redirect = new URLSearchParams(location.search).get("redirect");
+
+  //   window.location.href = `${API_URL}/auth/google?redirect=${redirect || ""}`;
+  // };
+
+  const handleGoogle = async () => {
     const API_URL =
       import.meta.env.MODE === "production"
         ? "https://ag-associates-backend.onrender.com/api"
         : "http://localhost:5001/api";
 
+    const BASE_URL =
+      import.meta.env.MODE === "production"
+        ? "https://ag-associates-backend.onrender.com"
+        : "http://localhost:5001";
+
     const redirect = new URLSearchParams(location.search).get("redirect");
 
-    window.location.href = `${API_URL}/auth/google?redirect=${redirect || ""}`;
+    try {
+      // 🔥 Wake up backend first
+      await fetch(BASE_URL);
+
+      // ⏩ Then redirect to Google login
+      window.location.href = `${API_URL}/auth/google?redirect=${redirect || ""}`;
+    } catch (err) {
+      console.error("Wake up failed", err);
+    }
   };
 
   return (

@@ -77,9 +77,16 @@ const Footer = () => {
             viewport={{ once: true }}
             className="space-y-6"
           >
-            <div className="flex items-center space-x-3">
-              <img src={logo} alt="AG Logo" className="h-14 w-14" />
-              <span className="text-2xl font-bold">AG & ASSOCIATES</span>
+            <div className="flex items-center gap-3">
+              <img
+                src={logo}
+                alt="AG Logo"
+                className="h-12 w-auto object-contain transition-transform duration-300 hover:scale-105"
+              />
+
+              <span className="text-xl md:text-2xl font-bold tracking-wide">
+                AG & ASSOCIATES
+              </span>
             </div>
 
             <p className="text-white/80 leading-relaxed">
