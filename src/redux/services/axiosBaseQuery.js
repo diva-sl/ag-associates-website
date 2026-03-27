@@ -1,3 +1,36 @@
+// import axios from "axios";
+
+// const baseURL =
+//   import.meta.env.MODE === "production"
+//     ? "https://ag-associates-backend.onrender.com/api"
+//     : "http://localhost:5001/api";
+
+// const axiosInstance = axios.create({
+//   baseURL,
+// });
+
+// // axiosInstance.interceptors.request.use((config) => {
+// //   const token = localStorage.getItem("authToken");
+// //   if (token) {
+// //     config.headers.Authorization = `Bearer ${token}`;
+// //   }
+// //   return config;
+// // });
+
+// axiosInstance.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     if (error.response?.status === 401) {
+//       // 🔥 Auto logout
+//       localStorage.removeItem("authToken");
+
+//       window.location.href = "/auth"; // redirect to login
+//     }
+
+//     return Promise.reject(error);
+//   },
+// );
+
 import axios from "axios";
 
 const baseURL =
@@ -9,22 +42,29 @@ const axiosInstance = axios.create({
   baseURL,
 });
 
-// axiosInstance.interceptors.request.use((config) => {
-//   const token = localStorage.getItem("authToken");
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
+// ✅ ADD THIS BACK (CRITICAL)
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("authToken");
 
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+// ✅ RESPONSE INTERCEPTOR (SAFE VERSION)
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // 🔥 Auto logout
+      console.warn("Token expired or invalid");
+
       localStorage.removeItem("authToken");
 
-      window.location.href = "/auth"; // redirect to login
+      if (!window.location.pathname.includes("/auth")) {
+        window.location.href = "/auth";
+      }
     }
 
     return Promise.reject(error);

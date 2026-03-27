@@ -72,7 +72,20 @@ export const authApi = createApi({
         body: data,
       }),
     }),
-
+    forgotPassword: builder.mutation({
+      query: (data) => ({
+        url: "/auth/forgot-password",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    resetPassword: builder.mutation({
+      query: ({ token, password }) => ({
+        url: `/auth/reset-password/${token}`,
+        method: "PUT",
+        body: { password },
+      }),
+    }),
     /* ================= DOCUMENT ================= */
     getDocuments: builder.query({
       query: () => ({
@@ -109,4 +122,6 @@ export const {
   useUploadDocumentMutation,
   useDeleteDocumentMutation,
   useChangePasswordMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = authApi;

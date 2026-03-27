@@ -25,6 +25,8 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import FloatingWhatsApp from "./components/FloatingWhatsApp";
 import BackToTop from "./components/BackToTop";
 import Profile from "./pages/Profile";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 /* ✅ Home Page */
 function HomePage() {
@@ -85,6 +87,8 @@ function App() {
           <Route path="/terms-and-conditions" element={<Terms />} />
           <Route path="/google-success" element={<GoogleSuccess />} />
           <Route path="/auth" element={<AuthPage />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           {/* <Route path="/profile" element={<Profile />} /> */}
 
           <Route

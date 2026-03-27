@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, Eye, EyeOff, LogIn, UserPlus } from "lucide-react";
 import {
@@ -244,7 +244,12 @@ export default function AuthPage() {
                 <p className="text-red-500 text-sm mt-1">{errors.password}</p>
               )}
             </div>
-
+            <p
+              onClick={() => navigate("/forgot-password")}
+              className="text-sm text-blue-500 cursor-pointer text-right"
+            >
+              Forgot Password?
+            </p>
             {/* SUBMIT */}
             <button
               type="submit"
