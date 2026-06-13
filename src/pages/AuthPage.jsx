@@ -121,7 +121,18 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-gradient-to-br from-[#511D43] to-[#901E3E]">
+    <div
+      className="
+min-h-screen
+grid
+lg:grid-cols-2
+bg-gradient-to-br
+from-[#511D43]
+to-[#901E3E]
+pt-16
+lg:pt-0
+"
+    >
       {/* ================= LEFT SIDE ================= */}
 
       <div className="hidden lg:flex relative flex-col justify-center items-center text-white px-16 py-20 overflow-hidden">
@@ -166,12 +177,27 @@ export default function AuthPage() {
       </div>
       {/* ================= RIGHT SIDE ================= */}
 
-      <div className="flex items-center justify-center p-6">
+      <div className="flex flex-col lg:flex-row items-center justify-center p-6">
+        {/* Mobile Lottie */}
+        <div className="lg:hidden flex justify-center mb-4">
+          <Lottie
+            animationData={animationData}
+            loop
+            className="w-[220px] h-[220px]"
+          />
+        </div>
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-md"
+          className="
+bg-white
+rounded-3xl
+shadow-2xl
+p-6 md:p-10
+w-full
+max-w-md
+"
         >
           <h2 className="text-3xl font-bold text-center mb-6 text-[#511D43]">
             {isLogin ? "Welcome Back" : "Create Account"}

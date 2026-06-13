@@ -107,10 +107,17 @@ const HeroRightDashboard = () => {
       <div
         className="
   w-full
-  max-w-[380px]
-  min-h-[260px]
-  h-[260px]
-  md:h-[280px]
+max-w-[380px]
+w-full
+
+min-h-[300px]
+h-[300px]
+
+sm:min-h-[280px]
+sm:h-[280px]
+
+md:min-h-[280px]
+md:h-[280px]
   bg-white/95
 backdrop-blur-md
 rounded-3xl
@@ -146,9 +153,9 @@ shadow-[0_10px_40px_rgba(0,0,0,0.08)]
             }}
           >
             {/* Header */}
-            <div className="flex items-start justify-between mb-5">
+            <div className="flex items-start justify-between gap-3 mb-4">
               <div>
-                <h3 className="text-xl font-bold text-slate-900">
+                <h3 className="text-lg md:text-xl font-bold text-slate-900">
                   {current.title}
                 </h3>
 
@@ -156,7 +163,6 @@ shadow-[0_10px_40px_rgba(0,0,0,0.08)]
                   {current.subtitle}
                 </p>
               </div>
-
               <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-semibold">
                 Live
               </span>
@@ -213,7 +219,7 @@ shadow-[0_10px_40px_rgba(0,0,0,0.08)]
                 }}
                 className="text-center mb-2"
               >
-                <div className="text-6xl font-bold text-green-600">
+                <div className="text-5xl md:text-6xl font-bold text-green-600">
                   <CountUp end={98} duration={2} />%
                 </div>
               </motion.div>
@@ -222,7 +228,7 @@ shadow-[0_10px_40px_rgba(0,0,0,0.08)]
             {/* Refund */}
             {current.type === "refund" && (
               <div className="mb-2">
-                <div className="text-4xl font-bold text-green-600">
+                <div className="text-3xl md:text-4xl font-bold text-green-600">
                   {current.value}
                 </div>
 
@@ -239,7 +245,14 @@ shadow-[0_10px_40px_rgba(0,0,0,0.08)]
               {current.points.map((point) => (
                 <div
                   key={point}
-                  className="flex items-center gap-3 text-slate-700"
+                  className="
+flex
+items-center
+gap-2
+text-sm
+md:text-base
+text-slate-700
+"
                 >
                   <span className="w-2 h-2 rounded-full bg-purple-600" />
                   {point}
