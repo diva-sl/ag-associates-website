@@ -12,7 +12,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Lottie from "lottie-react";
 // import animationData from "@/assets/auth-animation.json";
 
-import animationData from "../assets/auth-animation.json";
+import animationData from "../assets/lottie/auth-animation.json";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
