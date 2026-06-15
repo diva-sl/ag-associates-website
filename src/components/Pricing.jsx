@@ -10,141 +10,172 @@ import {
 } from "@/redux/services/transactionApi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useGetPlansQuery } from "../redux/services/planApi";
 
 /* ================= PLAN DATA ================= */
 
-const incomeTaxPlans = [
-  {
-    name: "Essential Tax",
-    price: 1499,
-    // price: 1,
-    originalPrice: 2499,
-    ideal: "Salaried professionals with single house property.",
-    features: [
-      "ITR Filing (Salary)",
-      "Form 16 Review",
-      "Basic Tax Planning",
-      "Email Support",
-    ],
-  },
-  {
-    name: "Business Plus",
-    price: 4999,
-    originalPrice: 9999,
-    ideal: "Freelancers & Small Business Owners.",
-    highlight: true,
-    features: [
-      "Business ITR Filing",
-      "P&L Review",
-      "Expense Optimization",
-      "Priority Support",
-    ],
-  },
-  {
-    name: "Capital Gains Expert",
-    price: 3999,
-    originalPrice: 6999,
-    ideal: "Stock, F&O, Crypto, Real Estate.",
-    features: [
-      "Capital Gains Computation",
-      "Loss Adjustment",
-      "Tax Strategy",
-      "Consultation Call",
-    ],
-  },
-];
+// const incomeTaxPlans = [
+//   {
+//     name: "Essential Tax",
+//     price: 1499,
+//     // price: 1,
+//     originalPrice: 2499,
+//     ideal: "Salaried professionals with single house property.",
+//     features: [
+//       "ITR Filing (Salary)",
+//       "Form 16 Review",
+//       "Basic Tax Planning",
+//       "Email Support",
+//     ],
+//   },
+//   {
+//     name: "Business Plus",
+//     price: 4999,
+//     originalPrice: 9999,
+//     ideal: "Freelancers & Small Business Owners.",
+//     highlight: true,
+//     features: [
+//       "Business ITR Filing",
+//       "P&L Review",
+//       "Expense Optimization",
+//       "Priority Support",
+//     ],
+//   },
+//   {
+//     name: "Capital Gains Expert",
+//     price: 3999,
+//     originalPrice: 6999,
+//     ideal: "Stock, F&O, Crypto, Real Estate.",
+//     features: [
+//       "Capital Gains Computation",
+//       "Loss Adjustment",
+//       "Tax Strategy",
+//       "Consultation Call",
+//     ],
+//   },
+// ];
 
-const advisoryPlans = [
-  {
-    name: "Global Income",
-    price: 8999,
-    originalPrice: 19999,
-    ideal: "NRIs & Residents with Foreign Assets.",
-    features: [
-      "NRI ITR Filing",
-      "DTAA Advisory",
-      "Foreign Asset Reporting",
-      "Email Support",
-    ],
-  },
-  {
-    name: "Premium Wealth",
-    price: 14999,
-    originalPrice: 29999,
-    ideal: "High-income individuals seeking advisory.",
-    features: [
-      "Advance Tax Planning",
-      "Quarterly Review",
-      "Investment Structuring",
-      "Priority Consultation",
-    ],
-  },
-  {
-    name: "Corporate Signature",
-    price: 25000,
-    originalPrice: 49999,
-    ideal: "Ultra-high-net-worth clients & complex entities.",
-    features: [
-      "Corporate Structuring",
-      "Audit Assistance",
-      "Dedicated CA",
-      "Full Compliance Support",
-    ],
-  },
-];
+// const advisoryPlans = [
+//   {
+//     name: "Global Income",
+//     price: 8999,
+//     originalPrice: 19999,
+//     ideal: "NRIs & Residents with Foreign Assets.",
+//     features: [
+//       "NRI ITR Filing",
+//       "DTAA Advisory",
+//       "Foreign Asset Reporting",
+//       "Email Support",
+//     ],
+//   },
+//   {
+//     name: "Premium Wealth",
+//     price: 14999,
+//     originalPrice: 29999,
+//     ideal: "High-income individuals seeking advisory.",
+//     features: [
+//       "Advance Tax Planning",
+//       "Quarterly Review",
+//       "Investment Structuring",
+//       "Priority Consultation",
+//     ],
+//   },
+//   {
+//     name: "Corporate Signature",
+//     price: 25000,
+//     originalPrice: 49999,
+//     ideal: "Ultra-high-net-worth clients & complex entities.",
+//     features: [
+//       "Corporate Structuring",
+//       "Audit Assistance",
+//       "Dedicated CA",
+//       "Full Compliance Support",
+//     ],
+//   },
+// ];
 
-const gstPlans = [
-  {
-    name: "Business Launch (GST)",
-    price: 1999,
-    originalPrice: 3999,
-    ideal: "Individuals & Sole Proprietorships.",
-    features: [
-      "GST Registration",
-      "Application Filing",
-      "Documentation Support",
-      "Email Assistance",
-    ],
-  },
-  {
-    name: "Partnership / LLP Setup",
-    price: 7999,
-    originalPrice: 14999,
-    ideal: "Partnership firms & LLPs.",
-    features: [
-      "LLP Incorporation",
-      "Deed Review",
-      "PAN & TAN",
-      "Compliance Guidance",
-    ],
-  },
-  {
-    name: "Import-Export (GST + IEC)",
-    price: 14999,
-    originalPrice: 24999,
-    ideal: "Global Trade Businesses.",
-    features: [
-      "GST Registration",
-      "IEC Registration",
-      "Export Compliance",
-      "Consultation Support",
-    ],
-  },
-  {
-    name: "Corporate GST Setup",
-    price: 19999,
-    originalPrice: 39999,
-    ideal: "Private Limited Companies.",
-    features: [
-      "GST Registration",
-      "DSC Support",
-      "Director KYC",
-      "Compliance Setup",
-    ],
-  },
-];
+// const gstPlans = [
+//   {
+//     name: "Business Launch (GST)",
+//     price: 1999,
+//     originalPrice: 3999,
+//     ideal: "Individuals & Sole Proprietorships.",
+//     features: [
+//       "GST Registration",
+//       "Application Filing",
+//       "Documentation Support",
+//       "Email Assistance",
+//     ],
+//   },
+//   {
+//     name: "Partnership / LLP Setup",
+//     price: 7999,
+//     originalPrice: 14999,
+//     ideal: "Partnership firms & LLPs.",
+//     features: [
+//       "LLP Incorporation",
+//       "Deed Review",
+//       "PAN & TAN",
+//       "Compliance Guidance",
+//     ],
+//   },
+//   {
+//     name: "Import-Export (GST + IEC)",
+//     price: 14999,
+//     originalPrice: 24999,
+//     ideal: "Global Trade Businesses.",
+//     features: [
+//       "GST Registration",
+//       "IEC Registration",
+//       "Export Compliance",
+//       "Consultation Support",
+//     ],
+//   },
+//   {
+//     name: "Corporate GST Setup",
+//     price: 19999,
+//     originalPrice: 39999,
+//     ideal: "Private Limited Companies.",
+//     features: [
+//       "GST Registration",
+//       "DSC Support",
+//       "Director KYC",
+//       "Compliance Setup",
+//     ],
+//   },
+// ];
 
 /* ================= COUNT UP ================= */
+
+// const CountUpPrice = ({ value }) => {
+//   const [count, setCount] = useState(0);
+//   const { data = [] } = useGetPlansQuery();
+//   // const incomeTaxPlans = data.filter((x) => x.category === "Income Tax");
+
+//   // const advisoryPlans = data.filter((x) => x.category === "Advisory");
+
+//   // const gstPlans = data.filter((x) => x.category === "GST");
+
+//   useEffect(() => {
+//     let start = 0;
+//     const duration = 700;
+//     const increment = value / (duration / 16);
+
+//     const timer = setInterval(() => {
+//       start += increment;
+//       if (start >= value) {
+//         setCount(value);
+//         clearInterval(timer);
+//       } else {
+//         setCount(Math.floor(start));
+//       }
+//     }, 16);
+
+//     return () => clearInterval(timer);
+//   }, [value]);
+
+//   return <>₹{count.toLocaleString()}</>;
+// };
 
 const CountUpPrice = ({ value }) => {
   const [count, setCount] = useState(0);
@@ -156,6 +187,7 @@ const CountUpPrice = ({ value }) => {
 
     const timer = setInterval(() => {
       start += increment;
+
       if (start >= value) {
         setCount(value);
         clearInterval(timer);
@@ -180,6 +212,12 @@ export default function Pricing() {
 
   const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const { data = [], isLoading } = useGetPlansQuery();
+  const incomeTaxPlans = data.filter((plan) => plan.category === "Income Tax");
+
+  const advisoryPlans = data.filter((plan) => plan.category === "Advisory");
+
+  const gstPlans = data.filter((plan) => plan.category === "GST");
 
   useEffect(() => {
     const savedPlan = localStorage.getItem("pendingPlan");
@@ -242,6 +280,14 @@ export default function Pricing() {
       plan.originalPrice > plan.price
         ? Math.round((savings / plan.originalPrice) * 100)
         : 0;
+
+    if (isLoading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          Loading Plans...
+        </div>
+      );
+    }
 
     return (
       <motion.div

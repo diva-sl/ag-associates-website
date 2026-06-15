@@ -27,6 +27,8 @@ import BackToTop from "./components/BackToTop";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import SuccessStories from "./pages/SuccessStories";
+import SuccessStoryDetails from "./pages/SuccessStoryDetails";
 
 /* ✅ Home Page */
 function HomePage() {
@@ -89,6 +91,12 @@ function App() {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/success-stories" element={<SuccessStories />} />
+
+          <Route
+            path="/success-stories/:id"
+            element={<SuccessStoryDetails />}
+          />
           {/* <Route path="/profile" element={<Profile />} /> */}
 
           <Route
