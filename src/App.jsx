@@ -18,6 +18,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import PrivacyPolicy from "@/components/PrivacyPolicy";
 import Terms from "@/components/Terms";
 import FAQ from "@/components/FAQ";
+import LegalPage from "./components/LegalPage";
 import Pricing from "@/components/Pricing";
 import GoogleSuccess from "./pages/GoogleSuccess";
 import AuthPage from "./pages/AuthPage";
@@ -84,9 +85,15 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/pricing" element={<Pricing />} />
-          <Route path="/disclaimer" element={<Disclaimer />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-and-conditions" element={<Terms />} />
+          {/* <Route path="/disclaimer" element={<Disclaimer />} /> */}
+          {/* <Route path="/privacy-policy" element={<PrivacyPolicy />} /> */}
+          {/* <Route path="/terms-and-conditions" element={<Terms />} /> */}
+          {/* <Route path="/privacy" element={<LegalPage />} />
+          <Route path="/terms" element={<LegalPage />} />
+          <Route path="/disclaimer" element={<LegalPage />} />
+          <Route path="/refund" element={<LegalPage />} />
+          <Route path="/cancellation" element={<LegalPage />} /> */}
+          <Route path="/legal/:page" element={<LegalPage />} />
           <Route path="/google-success" element={<GoogleSuccess />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -3,7 +3,7 @@ export const navLinks = [
   { name: "About", id: "about" },
   { name: "Services", id: "services" },
   {
-    name: "Stories",
+    name: "Blogs",
     link: "/success-stories",
   },
   { name: "Contact", id: "contact" },

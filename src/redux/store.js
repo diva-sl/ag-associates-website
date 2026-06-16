@@ -5,6 +5,7 @@ import { authApi } from "./services/authApi";
 import { transactionApi } from "./services/transactionApi";
 import { planApi } from "./services/planApi";
 import { successStoryApi } from "./services/successStoryApi";
+import { legalApi } from "./services/legalApi";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     [transactionApi.reducerPath]: transactionApi.reducer,
     [planApi.reducerPath]: planApi.reducer,
     [successStoryApi.reducerPath]: successStoryApi.reducer,
+    [legalApi.reducerPath]: legalApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>
@@ -22,5 +24,6 @@ export const store = configureStore({
       transactionApi.middleware,
       planApi.middleware,
       successStoryApi.middleware,
+      legalApi.middleware,
     ),
 });

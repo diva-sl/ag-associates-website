@@ -195,15 +195,15 @@ const Footer = () => {
           </p>
 
           <div className="flex space-x-6">
-            <Link to="/privacy-policy" className="hover:text-white">
-              Privacy Policy
-            </Link>
-            <Link to="/terms-and-conditions" className="hover:text-white">
-              Terms & Conditions
-            </Link>
-            <Link to="/disclaimer" className="hover:text-white">
-              Disclaimer
-            </Link>
+            <Link to="/legal/privacy">Privacy Policy</Link>
+
+            <Link to="/legal/terms">Terms & Conditions</Link>
+
+            <Link to="/legal/disclaimer">Disclaimer</Link>
+
+            {/* <Link to="/legal/refund">Refund Policy</Link>
+
+            <Link to="/legal/cancellation">Cancellation Policy</Link> */}
           </div>
         </div>
       </div>
