@@ -67,7 +67,8 @@ export default function Pricing() {
     try {
       const res = await createOrder({
         amount: selectedPlan.price,
-        planName: selectedPlan.name,
+        // planName: selectedPlan.name,
+        planId: selectedPlan._id,
       }).unwrap();
 
       const order = res.order;
@@ -81,9 +82,11 @@ export default function Pricing() {
         order_id: order.id,
 
         handler: async function (response) {
-          await verifyPayment(response);
+          const result = await verifyPayment(response).unwrap();
 
           setPaymentSuccess(true);
+
+          window.dispatchEvent(new Event("subscriptionUpdated"));
 
           setTimeout(() => {
             setPaymentSuccess(false);
