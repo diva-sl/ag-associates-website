@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut, ChevronDown } from "lucide-react";
 import { Button } from "@/ui/button";
 import { navLinks } from "@/lib/constants";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -17,6 +17,8 @@ const Header = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const drawerRef = useRef();
+
+  const [resourcesOpen, setResourcesOpen] = useState(false);
 
   const { token, user } = useSelector((state) => state.auth);
 
@@ -121,28 +123,91 @@ const Header = () => {
 
             {/* ================= DESKTOP NAV ================= */}
             <nav className="hidden md:flex items-center space-x-8">
-              {navLinks.map((item) =>
-                item.link ? (
+              {navLinks.map((item) => {
+                if (item.dropdown) {
+                  return (
+                    <div key={item.name} className="relative group">
+                      <button
+                        className="
+            flex
+            items-center
+            gap-1
+
+            text-white
+            font-medium
+          "
+                      >
+                        {item.name}
+                        <ChevronDown size={16} />
+                      </button>
+
+                      <div
+                        className="
+            absolute
+            top-full
+            left-0
+
+            mt-3
+            w-56
+
+            rounded-2xl
+
+            bg-white
+            shadow-2xl
+
+            opacity-0
+            invisible
+
+            group-hover:opacity-100
+            group-hover:visible
+
+            transition-all
+            duration-300
+
+            overflow-hidden
+          "
+                      >
+                        {item.items.map((sub) => (
+                          <Link
+                            key={sub.name}
+                            to={sub.link}
+                            className="
+                block
+
+                px-5
+                py-3
+
+                text-gray-700
+
+                hover:bg-gray-100
+              "
+                          >
+                            {sub.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+
+                return item.link ? (
                   <Link
                     key={item.name}
                     to={item.link}
-                    className="relative text-white font-medium group"
+                    className="text-white font-medium"
                   >
                     {item.name}
-                    <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
                   </Link>
                 ) : (
                   <button
                     key={item.name}
                     onClick={() => scrollToSection(item.id)}
-                    className="relative text-white font-medium group"
+                    className="text-white font-medium"
                   >
                     {item.name}
-                    <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
                   </button>
-                ),
-              )}
-
+                );
+              })}
               {/* Consultation Button */}
               <motion.div
                 whileHover={{ scale: 1.08 }}
@@ -303,35 +368,117 @@ const Header = () => {
 
                 {/* Navigation */}
                 <div className="flex flex-col gap-4">
-                  {navLinks.map((item) =>
-                    item.link ? (
-                      <Link
-                        key={item.name}
-                        to={item.link}
-                        onClick={() => setIsOpen(false)}
-                        className="text-lg font-medium hover:text-gray-300 transition"
-                      >
-                        {item.name}
-                      </Link>
-                    ) : (
+                  {navLinks.map((item) => {
+                    if (item.dropdown) {
+                      return (
+                        <div key={item.name}>
+                          <button
+                            onClick={() => setResourcesOpen(!resourcesOpen)}
+                            className="
+                              w-full
+                              flex
+                              items-center
+                              justify-between
+
+                              text-left
+                              text-lg
+                              font-medium
+
+                              hover:text-gray-300
+                              transition
+                            "
+                          >
+                            <span>{item.name}</span>
+
+                            <motion.div
+                              animate={{
+                                rotate: resourcesOpen ? 180 : 0,
+                              }}
+                              transition={{
+                                duration: 0.2,
+                              }}
+                            >
+                              <ChevronDown size={18} />
+                            </motion.div>
+                          </button>
+
+                          <AnimatePresence>
+                            {resourcesOpen && (
+                              <motion.div
+                                initial={{
+                                  height: 0,
+                                  opacity: 0,
+                                }}
+                                animate={{
+                                  height: "auto",
+                                  opacity: 1,
+                                }}
+                                exit={{
+                                  height: 0,
+                                  opacity: 0,
+                                }}
+                                className="overflow-hidden"
+                              >
+                                <div className="pl-5 mt-3 flex flex-col gap-3">
+                                  {item.items.map((sub) => (
+                                    <Link
+                                      key={sub.name}
+                                      to={sub.link}
+                                      onClick={() => setIsOpen(false)}
+                                      className="
+                                        text-white/75
+                                        hover:text-white
+                                        transition
+                                      "
+                                    >
+                                      {sub.name}
+                                    </Link>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      );
+                    }
+
+                    if (item.link) {
+                      return (
+                        <Link
+                          key={item.name}
+                          to={item.link}
+                          onClick={() => setIsOpen(false)}
+                          className="text-lg font-medium"
+                        >
+                          {item.name}
+                        </Link>
+                      );
+                    }
+
+                    return (
                       <button
                         key={item.name}
                         onClick={() => scrollToSection(item.id)}
-                        className="text-left text-lg font-medium hover:text-gray-300 transition"
+                        className="text-left text-lg font-medium"
                       >
                         {item.name}
                       </button>
-                    ),
-                  )}
+                    );
+                  })}
 
                   <Button
                     onClick={() => scrollToSection("contact")}
-                    className="bg-white text-purple-700 rounded-full py-2 font-semibold"
+                    className="
+      bg-white
+      text-[#511D43]
+      rounded-full
+      py-2
+      font-semibold
+    "
                   >
                     Get Consultation
                   </Button>
                 </div>
-
                 {/* Auth Actions */}
                 <div className="mt-6">
                   {token ? (

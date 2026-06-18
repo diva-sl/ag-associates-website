@@ -30,6 +30,9 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import SuccessStories from "./pages/SuccessStories";
 import SuccessStoryDetails from "./pages/SuccessStoryDetails";
+import KnowledgeCenter from "./pages/knowledgeCenter/KnowledgeCenter";
+import KnowledgeCategory from "./pages/knowledgeCenter/KnowledgeCategory";
+import KnowledgeArticle from "./pages/knowledgeCenter/KnowledgeArticle";
 
 /* ✅ Home Page */
 function HomePage() {
@@ -99,6 +102,17 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/success-stories" element={<SuccessStories />} />
+          <Route path="/knowledge-center" element={<KnowledgeCenter />} />
+
+          <Route
+            path="/knowledge-center/category/:slug"
+            element={<KnowledgeCategory />}
+          />
+
+          <Route
+            path="/knowledge-center/:slug"
+            element={<KnowledgeArticle />}
+          />
 
           <Route
             path="/success-stories/:id"

@@ -135,7 +135,6 @@ shadow-[0_10px_40px_rgba(0,0,0,0.08)]
   flex
   flex-col
 "
-            key={current.id}
             initial={{
               opacity: 0,
               x: 30,
