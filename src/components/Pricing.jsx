@@ -63,48 +63,144 @@ export default function Pricing() {
     }
   }, [token]);
 
+  // const handlePayment = async () => {
+  //   try {
+  //     const res = await createOrder({
+  //       amount: selectedPlan.price,
+  //       // planName: selectedPlan.name,
+  //       planId: selectedPlan._id,
+  //     }).unwrap();
+
+  //     const order = res.order;
+
+  //     const options = {
+  //       key: import.meta.env.VITE_RAZORPAY_KEY,
+  //       amount: order.amount,
+  //       currency: "INR",
+  //       name: "AG & Associates",
+  //       description: selectedPlan.name,
+  //       order_id: order.id,
+
+  //       handler: async function (response) {
+  //         const result = await verifyPayment(response).unwrap();
+
+  //         setPaymentSuccess(true);
+
+  //         window.dispatchEvent(new Event("subscriptionUpdated"));
+
+  //         setTimeout(() => {
+  //           setPaymentSuccess(false);
+  //           setSelectedPlan(null);
+  //         }, 3000);
+  //       },
+
+  //       modal: {
+  //         ondismiss: function () {
+  //           setSelectedPlan(null);
+  //         },
+  //       },
+  //     };
+
+  //     const rzp = new window.Razorpay(options);
+  //     rzp.open();
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
   const handlePayment = async () => {
     try {
+      if (!selectedPlan?._id) {
+        alert("Invalid plan selected");
+        return;
+      }
+
       const res = await createOrder({
-        amount: selectedPlan.price,
-        // planName: selectedPlan.name,
         planId: selectedPlan._id,
       }).unwrap();
 
-      const order = res.order;
+      const order = res?.order;
+
+      if (!order?.id) {
+        console.error("Order creation failed", res);
+        return;
+      }
+
+      console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY);
+      console.log("Order:", order);
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY,
+
         amount: order.amount,
-        currency: "INR",
+
+        currency: order.currency || "INR",
+
         name: "AG & Associates",
+
         description: selectedPlan.name,
+
         order_id: order.id,
 
-        handler: async function (response) {
-          const result = await verifyPayment(response).unwrap();
+        prefill: {
+          name: "",
+          email: "",
+        },
 
-          setPaymentSuccess(true);
+        theme: {
+          color: "#511D43",
+        },
 
-          window.dispatchEvent(new Event("subscriptionUpdated"));
+        handler: async (response) => {
+          try {
+            const result = await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            }).unwrap();
 
-          setTimeout(() => {
-            setPaymentSuccess(false);
-            setSelectedPlan(null);
-          }, 3000);
+            console.log("Verification Success", result);
+
+            setPaymentSuccess(true);
+
+            window.dispatchEvent(new Event("subscriptionUpdated"));
+
+            setTimeout(() => {
+              setPaymentSuccess(false);
+              setSelectedPlan(null);
+            }, 3000);
+          } catch (error) {
+            console.error("Payment Verification Error:", error);
+
+            alert("Payment received but verification failed. Contact support.");
+          }
         },
 
         modal: {
-          ondismiss: function () {
-            setSelectedPlan(null);
+          ondismiss: () => {
+            console.log("Payment popup closed");
           },
         },
       };
 
+      if (!window.Razorpay) {
+        alert("Razorpay SDK not loaded");
+        return;
+      }
+
       const rzp = new window.Razorpay(options);
+
+      rzp.on("payment.failed", function (response) {
+        console.error("Payment Failed:", response.error);
+
+        alert(response.error.description || "Payment Failed");
+      });
+
       rzp.open();
     } catch (error) {
-      console.log(error);
+      console.error("Create Order Error:", error);
+
+      alert("Unable to initiate payment");
     }
   };
 
