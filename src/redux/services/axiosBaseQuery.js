@@ -2,7 +2,7 @@ import axios from "axios";
 
 const baseURL =
   import.meta.env.MODE === "production"
-    ? "https://ag-associates-backend.onrender.com/api"
+    ? "https://api.agandassociates.org/api"
     : "http://localhost:5001/api";
 
 const axiosInstance = axios.create({
