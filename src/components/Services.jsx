@@ -164,7 +164,7 @@ const Services = () => {
                 >
                   <service.icon className="h-8 w-8 text-white" />
                 </motion.div>
-                ```
+
                 <h3 className="text-xl lg:text-2xl font-bold text-white leading-tight">
                   {service.title}
                 </h3>
