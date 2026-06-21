@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
+import Lottie from "lottie-react";
+
+import faqAnimation from "@/assets/lottie/FAQ.json";
+import financialAnimation from "@/assets/lottie/financial.json";
+
 import img1 from "@/assets/faq.jpg";
 import img2 from "@/assets/Audit.webp";
 import img3 from "@/assets/Audit1.webp";
@@ -137,19 +142,53 @@ const FAQ = () => {
 
   const currentFaqs = faqData[activeCategory];
   const [readMore, setReadMore] = useState(null);
+  const lottieAnimations = [faqAnimation, financialAnimation];
+  const [displayType, setDisplayType] = useState("lottie");
+
+  const [currentAnimation, setCurrentAnimation] = useState(financialAnimation);
+
+  const [selectedImage, setSelectedImage] = useState(images[0]);
 
   const toggleReadMore = (index) => {
     setReadMore(readMore === index ? null : index);
   };
 
   const toggle = (index) => {
-    setExpanded(expanded === index ? null : index);
-    setActiveIndex(index);
+    const isOpen = expanded === index;
+
+    if (isOpen) {
+      setExpanded(null);
+
+      const randomAnimation =
+        lottieAnimations[Math.floor(Math.random() * lottieAnimations.length)];
+
+      setCurrentAnimation(randomAnimation);
+
+      setDisplayType("lottie");
+    } else {
+      setExpanded(index);
+
+      setActiveIndex(index);
+
+      const randomImage = images[Math.floor(Math.random() * images.length)];
+
+      setSelectedImage(randomImage);
+
+      setDisplayType("image");
+    }
+
     setReadMore(null);
   };
 
   return (
-    <section id="faq" className="py-32 min-h-screen">
+    <section
+      id="faq"
+      className="
+    py-16
+    md:py-24
+    lg:py-28
+  "
+    >
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="text-center mb-14">
           <h2 className="text-4xl md:text-5xl font-bold text-white">
@@ -164,8 +203,21 @@ const FAQ = () => {
               key={cat}
               onClick={() => {
                 setActiveCategory(cat);
+
+                setExpanded(null);
+
                 setActiveIndex(0);
-                setExpanded(0);
+
+                setReadMore(null);
+
+                const randomAnimation =
+                  lottieAnimations[
+                    Math.floor(Math.random() * lottieAnimations.length)
+                  ];
+
+                setCurrentAnimation(randomAnimation);
+
+                setDisplayType("lottie");
               }}
               className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${
                 activeCategory === cat
@@ -178,9 +230,9 @@ const FAQ = () => {
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-16">
+        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12">
           {/* FAQ Scroll Panel */}
-          <div className="h-[650px] overflow-y-auto pr-4 space-y-6 custom-scroll">
+          <div className="h-auto lg:h-[650px] lg:overflow-y-auto pr-4 space-y-6 custom-scroll">
             {currentFaqs.map((faq, index) => {
               const isActive = expanded === index;
 
@@ -242,20 +294,93 @@ const FAQ = () => {
               );
             })}
           </div>
-          {/* Sticky Image */}
-          <div className="h-[650px] sticky top-32">
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={`${activeCategory}-${activeIndex}`}
-                src={images[activeIndex % images.length]}
-                alt="FAQ Visual"
-                initial={{ opacity: 0, scale: 1.05 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.6 }}
-                className="rounded-3xl w-full h-full object-cover shadow-2xl border border-white/10"
-              />
-            </AnimatePresence>
+          <div className="lg:sticky lg:top-28">
+            <div
+              className="
+      relative
+      overflow-hidden
+      rounded-3xl
+      border
+      border-white/10
+      bg-white/5
+      backdrop-blur-md
+      h-[320px]
+      md:h-[500px]
+      lg:h-[650px]
+    "
+            >
+              <div
+                className="
+        absolute
+        top-4
+        left-4
+        z-20
+        px-4
+        py-2
+        rounded-full
+        bg-black/30
+        backdrop-blur-md
+        border
+        border-white/10
+        text-white
+        text-sm
+        font-medium
+      "
+              >
+                {activeCategory}
+              </div>
+
+              <AnimatePresence mode="wait">
+                {displayType === "lottie" ? (
+                  <motion.div
+                    key={`lottie-${activeCategory}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="
+        h-full
+        w-full
+        flex
+        items-center
+        justify-center
+        p-6
+      "
+                  >
+                    <Lottie
+                      animationData={currentAnimation}
+                      loop
+                      className="w-full h-full"
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.img
+                    key={selectedImage}
+                    src={selectedImage}
+                    alt={activeCategory}
+                    initial={{
+                      opacity: 0,
+                      scale: 1.05,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                    }}
+                    exit={{
+                      opacity: 0,
+                    }}
+                    transition={{
+                      duration: 0.4,
+                    }}
+                    className="
+        h-full
+        w-full
+        object-cover
+      "
+                  />
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
