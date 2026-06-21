@@ -48,6 +48,7 @@ export default function Pricing() {
   const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const { data = [], isLoading } = useGetPlansQuery();
+
   const incomeTaxPlans = data.filter((plan) => plan.category === "Income Tax");
 
   const advisoryPlans = data.filter((plan) => plan.category === "Advisory");
@@ -62,51 +63,6 @@ export default function Pricing() {
       localStorage.removeItem("pendingPlan");
     }
   }, [token]);
-
-  // const handlePayment = async () => {
-  //   try {
-  //     const res = await createOrder({
-  //       amount: selectedPlan.price,
-  //       // planName: selectedPlan.name,
-  //       planId: selectedPlan._id,
-  //     }).unwrap();
-
-  //     const order = res.order;
-
-  //     const options = {
-  //       key: import.meta.env.VITE_RAZORPAY_KEY,
-  //       amount: order.amount,
-  //       currency: "INR",
-  //       name: "AG & Associates",
-  //       description: selectedPlan.name,
-  //       order_id: order.id,
-
-  //       handler: async function (response) {
-  //         const result = await verifyPayment(response).unwrap();
-
-  //         setPaymentSuccess(true);
-
-  //         window.dispatchEvent(new Event("subscriptionUpdated"));
-
-  //         setTimeout(() => {
-  //           setPaymentSuccess(false);
-  //           setSelectedPlan(null);
-  //         }, 3000);
-  //       },
-
-  //       modal: {
-  //         ondismiss: function () {
-  //           setSelectedPlan(null);
-  //         },
-  //       },
-  //     };
-
-  //     const rzp = new window.Razorpay(options);
-  //     rzp.open();
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   const handlePayment = async () => {
     try {
@@ -126,8 +82,13 @@ export default function Pricing() {
         return;
       }
 
-      console.log("Razorpay Key:", import.meta.env.VITE_RAZORPAY_KEY);
-      console.log("Order:", order);
+      if (isLoading) {
+        return (
+          <div className="min-h-screen flex items-center justify-center">
+            Loading Plans...
+          </div>
+        );
+      }
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY,
@@ -158,8 +119,6 @@ export default function Pricing() {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             }).unwrap();
-
-            console.log("Verification Success", result);
 
             setPaymentSuccess(true);
 
@@ -215,14 +174,6 @@ export default function Pricing() {
         ? Math.round((savings / plan.originalPrice) * 100)
         : 0;
 
-    if (isLoading) {
-      return (
-        <div className="min-h-screen flex items-center justify-center">
-          Loading Plans...
-        </div>
-      );
-    }
-
     return (
       <motion.div
         whileHover={{ y: -10 }}
@@ -262,7 +213,7 @@ export default function Pricing() {
         <p className="text-white/70 mb-6 text-sm">{plan.ideal}</p>
 
         <ul className="space-y-2 mb-6">
-          {plan.features.map((feature, i) => (
+          {plan.features?.map((feature, i) => (
             <li key={i} className="flex items-start text-white/90 text-sm">
               <CheckCircle className="w-4 h-4 mr-2 text-green-400 mt-1" />
               {feature}
@@ -294,7 +245,7 @@ export default function Pricing() {
       </h2>
       <div className={`grid ${cols} gap-10`}>
         {plans.map((plan, i) => (
-          <div key={i}>{renderCard(plan)}</div>
+          <div key={plan.id}>{renderCard(plan)}</div>
         ))}
       </div>
     </>
@@ -358,10 +309,34 @@ export default function Pricing() {
                   className="cursor-pointer"
                 />
               </div>
-
+              {/* 
               <p className="mb-6 text-sm md:text-base">
-                Plan Price: ₹{selectedPlan.price.toLocaleString()}
-              </p>
+              </p> */}
+              <div className="bg-white/10 rounded-2xl p-4 mb-6">
+                <div className="flex justify-between mb-2">
+                  <span>Plan Amount</span>
+
+                  <span>₹{selectedPlan.price.toLocaleString()}</span>
+                </div>
+
+                <div className="flex justify-between mb-2">
+                  <span>CGST (9%)</span>
+
+                  <span>₹{(selectedPlan.price * 0.09).toFixed(2)}</span>
+                </div>
+
+                <div className="flex justify-between mb-2">
+                  <span>SGST (9%)</span>
+
+                  <span>₹{(selectedPlan.price * 0.09).toFixed(2)}</span>
+                </div>
+
+                <div className="border-t border-white/20 pt-3 mt-3 flex justify-between text-xl font-bold">
+                  <span>Total Payable</span>
+
+                  <span>₹{(selectedPlan.price * 1.18).toFixed(2)}</span>
+                </div>
+              </div>
 
               <button
                 onClick={handlePayment}

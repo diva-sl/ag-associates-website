@@ -12,6 +12,7 @@ const DocumentsSection = ({
   documents,
   handleDocumentUpload,
   deleteDocument,
+  handleDownloadDocument,
 }) => {
   return (
     <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200">
@@ -66,7 +67,10 @@ const DocumentsSection = ({
       {documents?.length > 0 && (
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
           {documents.map((doc) => {
-            const isImage = /\.(jpg|jpeg|png|webp)$/i.test(doc?.fileUrl || "");
+            // const isImage = /\.(jpg|jpeg|png|webp)$/i.test(doc?.fileUrl || "");
+            const isImage = doc?.mimeType?.startsWith("image/");
+
+            const isPdf = doc?.mimeType === "application/pdf";
 
             return (
               <div
@@ -83,28 +87,29 @@ const DocumentsSection = ({
               >
                 {/* Preview */}
 
-                <div className="h-48 bg-slate-100 flex items-center justify-center overflow-hidden">
+                <div className="h-48 bg-slate-100 overflow-hidden">
                   {isImage ? (
                     <img
                       src={doc.fileUrl}
-                      alt={doc.type}
-                      className="
-                        w-full
-                        h-full
-                        object-cover
-                      "
+                      alt={doc.fileName}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : isPdf ? (
+                    <iframe
+                      src={doc.fileUrl}
+                      title={doc.fileName}
+                      className="w-full h-full"
                     />
                   ) : (
-                    <div className="flex flex-col items-center">
+                    <div className="h-full flex flex-col items-center justify-center">
                       <FileText size={48} className="text-[#901E3E]" />
 
-                      <span className="text-sm text-slate-500 mt-2">
-                        Document Preview
+                      <span className="text-sm mt-2 text-slate-500">
+                        {doc.fileName}
                       </span>
                     </div>
                   )}
                 </div>
-
                 {/* Content */}
 
                 <div className="p-5">
@@ -156,23 +161,21 @@ const DocumentsSection = ({
                       <Eye size={16} />
                       View
                     </a>
-
-                    <a
-                      href={doc.fileUrl}
-                      download
+                    <button
+                      onClick={() => handleDownloadDocument(doc._id)}
                       className="
-                        w-11
-                        h-11
-                        rounded-xl
-                        border
-                        flex
-                        items-center
-                        justify-center
-                        hover:bg-slate-100
-                      "
+    w-11
+    h-11
+    rounded-xl
+    border
+    flex
+    items-center
+    justify-center
+    hover:bg-slate-100
+  "
                     >
                       <Download size={16} />
-                    </a>
+                    </button>
 
                     <button
                       onClick={() => deleteDocument(doc._id)}

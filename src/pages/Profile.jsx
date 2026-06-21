@@ -24,9 +24,13 @@ import {
   useGetProfileQuery,
 } from "@/redux/services/authApi";
 
-import { useGetBillingHistoryQuery } from "@/redux/services/transactionApi";
+import {
+  useGetBillingHistoryQuery,
+  useDownloadInvoiceMutation,
+} from "@/redux/services/transactionApi";
 
 import { setCredentials } from "@/redux/slices/authSlice";
+import { useDownloadDocumentMutation } from "../redux/services/authApi";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -36,8 +40,6 @@ const Profile = () => {
   const token = localStorage.getItem("authToken");
 
   const [editing, setEditing] = useState(false);
-
-  const [documents, setDocuments] = useState([]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -60,9 +62,7 @@ const Profile = () => {
     skip: !token,
   });
 
-  const { data: docs = [] } = useGetDocumentsQuery(undefined, {
-    skip: !token,
-  });
+  const [downloadDocument] = useDownloadDocumentMutation();
 
   const { data: transactions = [] } = useGetBillingHistoryQuery();
 
@@ -77,6 +77,16 @@ const Profile = () => {
   const [deleteDocumentApi] = useDeleteDocumentMutation();
 
   const [changePassword] = useChangePasswordMutation();
+
+  const { data: docsData, refetch: refetchDocuments } = useGetDocumentsQuery(
+    undefined,
+    {
+      skip: !token,
+    },
+  );
+  const documents = docsData?.documents || [];
+
+  const [downloadInvoice] = useDownloadInvoiceMutation();
 
   /* ================= PROFILE LOAD ================= */
 
@@ -103,10 +113,6 @@ const Profile = () => {
       });
     }
   }, [user]);
-
-  useEffect(() => {
-    setDocuments(docs || []);
-  }, [docs]);
 
   /* ================= PROFILE UPDATE ================= */
 
@@ -164,25 +170,50 @@ const Profile = () => {
   /* ================= DOCUMENTS ================= */
 
   const handleDocumentUpload = async (e, type) => {
-    if (!e.target.files?.[0]) return;
+    try {
+      if (!e.target.files?.[0]) return;
 
-    const formData = new FormData();
+      const formData = new FormData();
 
-    formData.append("file", e.target.files[0]);
+      formData.append("file", e.target.files[0]);
 
-    formData.append("type", type);
+      formData.append("type", type);
 
-    const res = await uploadDocument(formData).unwrap();
+      await uploadDocument(formData).unwrap();
 
-    setDocuments((prev) => [...prev, res.document]);
+      await refetchDocuments();
+
+      alert("Document uploaded successfully");
+    } catch (error) {
+      alert(error?.data?.message || "Document upload failed");
+    }
   };
 
   const deleteDocument = async (id) => {
-    if (!window.confirm("Delete this document?")) return;
+    try {
+      if (!window.confirm("Delete this document?")) return;
 
-    await deleteDocumentApi(id).unwrap();
+      await deleteDocumentApi(id).unwrap();
 
-    setDocuments((prev) => prev.filter((doc) => doc._id !== id));
+      await refetchDocuments();
+
+      alert("Document deleted successfully");
+    } catch (error) {
+      alert(error?.data?.message || "Delete failed");
+    }
+  };
+  const handleDownloadDocument = async (id) => {
+    try {
+      const res = await downloadDocument(id).unwrap();
+
+      if (res?.url) {
+        window.open(res.url, "_blank");
+      }
+    } catch (error) {
+      console.error(error);
+
+      alert(error?.data?.message || "Download failed");
+    }
   };
 
   /* ================= PASSWORD ================= */
@@ -207,8 +238,20 @@ const Profile = () => {
 
   /* ================= INVOICE ================= */
 
-  const handleDownloadInvoice = (id) => {
-    window.open(`/api/transaction/invoice/${id}`, "_blank");
+  const handleDownloadInvoice = async (id) => {
+    try {
+      const res = await downloadInvoice(id).unwrap();
+
+      if (res?.url) {
+        window.open(res.url, "_blank");
+      } else {
+        alert("Invoice not found");
+      }
+    } catch (error) {
+      console.error(error);
+
+      alert(error?.data?.message || "Failed to download invoice");
+    }
   };
 
   return (
@@ -257,11 +300,11 @@ const Profile = () => {
             />
 
             {/* DOCUMENTS */}
-
             <DocumentsSection
               documents={documents}
               handleDocumentUpload={handleDocumentUpload}
               deleteDocument={deleteDocument}
+              handleDownloadDocument={handleDownloadDocument}
             />
 
             {/* PASSWORD */}

@@ -4,6 +4,7 @@ import axiosBaseQuery from "./axiosBaseQuery";
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: axiosBaseQuery,
+  tagTypes: ["User", "Document"],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (body) => ({
@@ -92,6 +93,7 @@ export const authApi = createApi({
         url: "/auth/documents",
         method: "GET",
       }),
+      providesTags: ["Document"],
     }),
 
     uploadDocument: builder.mutation({
@@ -100,11 +102,20 @@ export const authApi = createApi({
         method: "POST",
         body: formData,
       }),
+      invalidatesTags: ["Document"],
     }),
+
     deleteDocument: builder.mutation({
       query: (id) => ({
         url: `/auth/document/${id}`,
         method: "DELETE",
+      }),
+      invalidatesTags: ["Document"],
+    }),
+    downloadDocument: builder.mutation({
+      query: (id) => ({
+        url: `/auth/document/${id}/download`,
+        method: "GET",
       }),
     }),
   }),
@@ -119,6 +130,7 @@ export const {
   useUploadAvatarMutation,
   useRemoveAvatarMutation,
   useGetDocumentsQuery,
+  useDownloadDocumentMutation,
   useUploadDocumentMutation,
   useDeleteDocumentMutation,
   useChangePasswordMutation,
