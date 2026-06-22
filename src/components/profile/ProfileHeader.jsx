@@ -6,6 +6,7 @@ import {
   Calendar,
   Clock,
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 const ProfileHeader = ({ user, handleAvatarUpload, handleRemoveAvatar }) => {
   const initials =
@@ -143,18 +144,50 @@ const ProfileHeader = ({ user, handleAvatarUpload, handleRemoveAvatar }) => {
             </span>
 
             {user?.subscriptionStatus && (
-              <span
-                className={`
-                  px-4 py-2 rounded-full text-sm
-                  ${
-                    user.subscriptionStatus === "active"
-                      ? "bg-green-500/20 text-green-200"
-                      : "bg-red-500/20 text-red-200"
-                  }
-                `}
+              <motion.span
+                animate={{
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className={`       px-4
+      py-2
+      rounded-full
+      text-sm
+      font-semibold
+      flex
+      items-center
+      gap-2
+      w-fit
+      ${
+        user.subscriptionStatus === "active"
+          ? "bg-green-500/20 text-green-200 border border-green-400/30"
+          : "bg-red-500/20 text-red-200 border border-red-400/30"
+      }
+    `}
               >
+                <motion.span
+                  animate={{
+                    scale: [1, 1.6, 1],
+                    opacity: [1, 0.5, 1],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                  }}
+                  className={`
+    w-2.5
+    h-2.5
+    rounded-full
+    ${user.subscriptionStatus === "active" ? "bg-green-400" : "bg-red-400"}
+  `}
+                />
+
                 {user.subscriptionStatus.toUpperCase()}
-              </span>
+              </motion.span>
             )}
           </div>
 

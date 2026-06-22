@@ -30,21 +30,33 @@ const DocumentsSection = ({
 
       <div className="grid md:grid-cols-3 gap-5 mb-10">
         <UploadCard
-          title="Income Tax Returns"
-          subtitle="Upload ITR files"
+          title="PAN Card"
+          subtitle="Upload PAN Document"
+          onChange={(e) => handleDocumentUpload(e, "PAN_CARD")}
+        />
+
+        <UploadCard
+          title="Aadhaar Card"
+          subtitle="Upload Aadhaar Document"
+          onChange={(e) => handleDocumentUpload(e, "AADHAAR_CARD")}
+        />
+
+        <UploadCard
+          title="GST Certificate"
+          subtitle="Upload GST Document"
+          onChange={(e) => handleDocumentUpload(e, "GST_CERTIFICATE")}
+        />
+
+        <UploadCard
+          title="Income Tax Return"
+          subtitle="Upload ITR"
           onChange={(e) => handleDocumentUpload(e, "ITR")}
         />
 
         <UploadCard
-          title="GST Documents"
-          subtitle="Upload GST returns"
-          onChange={(e) => handleDocumentUpload(e, "GST")}
-        />
-
-        <UploadCard
           title="Other Documents"
-          subtitle="Upload supporting files"
-          onChange={(e) => handleDocumentUpload(e, "Other")}
+          subtitle="Upload Supporting Files"
+          onChange={(e) => handleDocumentUpload(e, "OTHER")}
         />
       </div>
 
@@ -128,7 +140,18 @@ const DocumentsSection = ({
                       {doc.type}
                     </span>
 
-                    <span className="text-xs text-slate-400">Uploaded</span>
+                    {/* <span className="text-xs text-slate-400">Uploaded</span> */}
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        doc.status === "approved"
+                          ? "bg-green-100 text-green-700"
+                          : doc.status === "rejected"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-amber-100 text-amber-700"
+                      }`}
+                    >
+                      {doc.status}
+                    </span>
                   </div>
 
                   <p className="mt-4 text-sm text-slate-500">
@@ -176,10 +199,10 @@ const DocumentsSection = ({
                     >
                       <Download size={16} />
                     </button>
-
-                    <button
-                      onClick={() => deleteDocument(doc._id)}
-                      className="
+                    {doc.status !== "approved" && doc.status !== "pending" && (
+                      <button
+                        onClick={() => deleteDocument(doc._id)}
+                        className="
                         w-11
                         h-11
                         rounded-xl
@@ -190,9 +213,10 @@ const DocumentsSection = ({
                         items-center
                         justify-center
                       "
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

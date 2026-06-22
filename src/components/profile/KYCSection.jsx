@@ -1,4 +1,14 @@
-import { CreditCard, BadgeCheck, ShieldCheck, FileCheck } from "lucide-react";
+import {
+  CreditCard,
+  BadgeCheck,
+  ShieldCheck,
+  FileCheck,
+  XCircle,
+  RefreshCw,
+  Hourglass,
+} from "lucide-react";
+
+import { motion } from "framer-motion";
 
 const KYCSection = ({ user, editing, formData, setFormData }) => {
   const maskedAadhaar =
@@ -20,25 +30,27 @@ const KYCSection = ({ user, editing, formData, setFormData }) => {
 
       {!editing ? (
         <div className="grid md:grid-cols-3 gap-5">
-          <KycCard
-            icon={<CreditCard />}
+          <VerificationStatus
+            icon={<CreditCard size={24} />}
             title="PAN Number"
-            value={user?.pan || "Not Provided"}
-            verified={!!user?.pan}
+            value={user?.pan}
+            status={user?.panStatus}
+            rejectReason={user?.panRejectReason}
           />
-
-          <KycCard
-            icon={<ShieldCheck />}
+          <VerificationStatus
+            icon={<ShieldCheck size={24} />}
             title="Aadhaar Number"
             value={maskedAadhaar}
-            verified={!!user?.aadhaar}
+            status={user?.aadhaarStatus}
+            rejectReason={user?.aadhaarRejectReason}
           />
 
-          <KycCard
-            icon={<FileCheck />}
+          <VerificationStatus
+            icon={<FileCheck size={24} />}
             title="GSTIN"
-            value={user?.gstin || "Not Provided"}
-            verified={!!user?.gstin}
+            value={user?.gstin}
+            status={user?.gstinStatus}
+            rejectReason={user?.gstinRejectReason}
           />
         </div>
       ) : (
@@ -148,23 +160,24 @@ const KycCard = ({ icon, title, value, verified }) => (
     <div className="flex items-center justify-between">
       <div
         className="
-          w-12
-          h-12
-          rounded-xl
-          bg-gradient-to-r
-          from-[#511D43]
-          to-[#901E3E]
-          text-white
-          flex
-          items-center
-          justify-center
-        "
+    w-14
+    h-14
+    rounded-2xl
+    flex
+    items-center
+    justify-center
+    text-white
+    bg-gradient-to-r
+    from-[#511D43]
+    to-[#901E3E]
+    shadow-lg
+  "
       >
         {icon}
       </div>
 
       {verified && (
-        <span className="flex items-center gap-1 text-green-600 text-sm font-medium">
+        <span className="flex items-center gap-1 text-[#511D43] text-sm font-semibold">
           <BadgeCheck size={16} />
           Verified
         </span>
@@ -204,3 +217,171 @@ const Input = ({ label, value, onChange }) => (
 );
 
 export default KYCSection;
+
+const VerificationStatus = ({ icon, title, value, status, rejectReason }) => {
+  const statusConfig = {
+    approved: {
+      label: "Verified",
+      icon: <BadgeCheck size={18} />,
+      className: "bg-green-100 text-green-700 border border-green-200",
+    },
+
+    pending: {
+      label: "Under Review",
+      icon: (
+        <motion.div
+          animate={{
+            rotate: [0, 360],
+          }}
+          transition={{
+            duration: 1,
+            repeat: Infinity,
+            repeatDelay: 3,
+            ease: "linear",
+          }}
+        >
+          <RefreshCw size={18} />
+        </motion.div>
+      ),
+      className: "bg-[#901E3E]/10 text-[#901E3E] border border-[#901E3E]/20",
+    },
+
+    rejected: {
+      label: "Rejected",
+      icon: <XCircle size={18} />,
+      className: "bg-red-100 text-red-700 border border-red-200",
+    },
+
+    not_uploaded: {
+      label: "Not Uploaded",
+      icon: <Hourglass size={18} />,
+      className: "bg-slate-100 text-slate-600 border border-slate-200",
+    },
+  };
+
+  const currentStatus = statusConfig[status] || statusConfig.not_uploaded;
+
+  return (
+    <div
+      className="
+        relative
+        overflow-hidden
+        rounded-3xl
+        border
+        border-slate-200
+        bg-white
+        p-6
+        hover:shadow-xl
+        hover:-translate-y-1
+        transition-all
+        duration-300
+      "
+    >
+      {/* Decorative Glow */}
+
+      <div
+        className="
+          absolute
+          -top-10
+          -right-10
+          w-32
+          h-32
+          rounded-full
+          bg-gradient-to-r
+          from-[#511D43]/10
+          to-[#901E3E]/10
+          blur-2xl
+        "
+      />
+
+      <div className="relative flex items-start justify-between">
+        <div className="flex gap-4 items-center">
+          <div
+            className="
+              w-14
+              h-14
+              rounded-2xl
+              flex
+              items-center
+              justify-center
+              text-white
+              bg-gradient-to-r
+              from-[#511D43]
+              to-[#901E3E]
+              shadow-lg
+            "
+          >
+            {icon}
+          </div>
+
+          <div>
+            <h4 className="font-semibold text-slate-800">{title}</h4>
+
+            <p className="text-sm text-slate-500 mt-1 break-all">
+              {value || "Not Submitted"}
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={`
+            px-3
+            py-2
+            rounded-full
+            flex
+            items-center
+            gap-2
+            text-xs
+            font-semibold
+            ${currentStatus.className}
+          `}
+        >
+          {currentStatus.icon}
+          {currentStatus.label}
+        </div>
+      </div>
+
+      {/* Rejection Reason */}
+
+      {status === "rejected" && rejectReason && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="
+            mt-5
+            rounded-2xl
+            border
+            border-red-200
+            bg-red-50
+            p-4
+          "
+        >
+          <p className="text-xs font-bold uppercase tracking-wide text-red-700">
+            Rejection Reason
+          </p>
+
+          <p className="text-sm text-red-600 mt-2">{rejectReason}</p>
+        </motion.div>
+      )}
+
+      {/* Verified Footer */}
+
+      {status === "approved" && (
+        <div
+          className="
+            mt-5
+            flex
+            items-center
+            gap-2
+            text-green-600
+            text-sm
+            font-medium
+          "
+        >
+          <BadgeCheck size={16} />
+          Verified and approved by compliance team
+        </div>
+      )}
+    </div>
+  );
+};

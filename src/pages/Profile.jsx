@@ -258,7 +258,18 @@ const Profile = () => {
     <>
       <LegalBanner title="Client Dashboard" />
 
-      <section className="py-16 lg:py-24 bg-slate-50 min-h-screen">
+      {/* <section className="py-16 lg:py-24 bg-slate-50 min-h-screen"> */}
+      <section
+        className="
+    py-16
+    lg:py-24
+    min-h-screen
+    bg-gradient-to-br
+    from-[#511D43]
+    via-[#6a2555]
+    to-[#901E3E]
+  "
+      >
         <div className="container mx-auto max-w-7xl px-4">
           <Breadcrumb current="Profile" />
 
