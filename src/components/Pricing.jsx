@@ -12,6 +12,10 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useGetPlansQuery } from "../redux/services/planApi";
 
+import Lottie from "lottie-react";
+import paymentSuccessAnimation from "@/assets/lottie/payment sucess.json";
+import UploadingAnimation from "@/assets/lottie/Uploading.json";
+
 const CountUpPrice = ({ value }) => {
   const [count, setCount] = useState(0);
 
@@ -44,10 +48,12 @@ export default function Pricing() {
   const [createOrder] = useCreateOrderMutation();
   const [verifyPayment] = useVerifyPaymentMutation();
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [verifyingPayment, setVerifyingPayment] = useState(false);
 
   const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const { data = [], isLoading } = useGetPlansQuery();
+  const [paidPlan, setPaidPlan] = useState(null);
 
   const incomeTaxPlans = data.filter((plan) => plan.category === "Income Tax");
 
@@ -114,11 +120,17 @@ export default function Pricing() {
 
         handler: async (response) => {
           try {
-            const result = await verifyPayment({
+            setVerifyingPayment(true);
+
+            await verifyPayment({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             }).unwrap();
+
+            setVerifyingPayment(false);
+
+            setPaidPlan(selectedPlan);
 
             setPaymentSuccess(true);
 
@@ -127,10 +139,12 @@ export default function Pricing() {
             setTimeout(() => {
               setPaymentSuccess(false);
               setSelectedPlan(null);
-            }, 3000);
-          } catch (error) {
-            console.error("Payment Verification Error:", error);
 
+              navigate("/profile");
+            }, 7000);
+          } catch (error) {
+            setVerifyingPayment(false);
+            console.error("Payment Verification Error:", error);
             alert("Payment received but verification failed. Contact support.");
           }
         },
@@ -244,8 +258,11 @@ export default function Pricing() {
         {title}
       </h2>
       <div className={`grid ${cols} gap-10`}>
-        {plans.map((plan, i) => (
+        {/* {plans.map((plan, i) => (
           <div key={plan.id}>{renderCard(plan)}</div>
+        ))} */}
+        {plans.map((plan, index) => (
+          <div key={plan._id || index}>{renderCard(plan)}</div>
         ))}
       </div>
     </>
@@ -288,7 +305,318 @@ export default function Pricing() {
       <AnimatePresence>
         {selectedPlan && (
           <motion.div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4"
+            className="
+        fixed
+        inset-0
+        z-[9999]
+        flex
+        items-center
+        justify-center
+        bg-black/70
+        backdrop-blur-md
+        p-4
+      "
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 180,
+              }}
+              className="
+          relative
+          overflow-hidden
+          w-full
+          max-w-md
+          rounded-[32px]
+          border
+          border-white/20
+          bg-gradient-to-br
+          from-[#511D43]
+          via-[#6a2557]
+          to-[#901E3E]
+          shadow-[0_25px_100px_rgba(81,29,67,0.45)]
+          text-white
+        "
+            >
+              <div className="absolute -top-24 -left-24 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-pulse" />
+
+              <div className="absolute -bottom-24 -right-24 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-pulse" />
+
+              <div
+                className="absolute inset-0 opacity-20 blur-3xl"
+                style={{
+                  background:
+                    "radial-gradient(circle,#ffffff 0%,transparent 70%)",
+                }}
+              />
+
+              <div className="relative z-10 p-6 md:p-8">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <p className="text-white/60 uppercase text-xs tracking-widest">
+                      Subscription Plan
+                    </p>
+
+                    <h3 className="text-2xl md:text-3xl font-bold mt-2">
+                      {selectedPlan.name}
+                    </h3>
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedPlan(null)}
+                    className="
+                w-10
+                h-10
+                rounded-xl
+                bg-white/10
+                hover:bg-white/20
+                flex
+                items-center
+                justify-center
+              "
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-5">
+                  <div className="flex justify-between py-2">
+                    <span className="text-white/70">Plan Amount</span>
+
+                    <span>₹{selectedPlan.price.toLocaleString()}</span>
+                  </div>
+
+                  <div className="flex justify-between py-2">
+                    <span className="text-white/70">CGST (9%)</span>
+
+                    <span>₹{(selectedPlan.price * 0.09).toFixed(2)}</span>
+                  </div>
+
+                  <div className="flex justify-between py-2">
+                    <span className="text-white/70">SGST (9%)</span>
+
+                    <span>₹{(selectedPlan.price * 0.09).toFixed(2)}</span>
+                  </div>
+
+                  <div className="border-t border-white/20 mt-3 pt-4 flex justify-between">
+                    <span className="font-semibold">Total Payable</span>
+
+                    <span className="text-2xl font-bold text-green-300">
+                      ₹{(selectedPlan.price * 1.18).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handlePayment}
+                  className="
+              mt-6
+              w-full
+              py-4
+              rounded-2xl
+              bg-white
+              text-[#511D43]
+              font-bold
+              text-lg
+              hover:scale-[1.02]
+              active:scale-[0.98]
+              transition-all
+            "
+                >
+                  Proceed to Secure Payment
+                </button>
+
+                <p className="text-center text-xs text-white/60 mt-4">
+                  🔒 Secured by Razorpay • SSL Encrypted
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* ================= SUCCESS MODAL ================= */}
+
+      <AnimatePresence>
+        {paymentSuccess && (
+          <motion.div
+            className="
+        fixed
+        inset-0
+        z-[99999]
+        flex
+        items-center
+        justify-center
+        bg-black/70
+        backdrop-blur-md
+        p-4
+      "
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{
+                scale: 0.8,
+                opacity: 0,
+              }}
+              animate={{
+                scale: 1,
+                opacity: 1,
+              }}
+              exit={{
+                scale: 0.8,
+                opacity: 0,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 180,
+              }}
+              className="
+          relative
+          overflow-hidden
+          w-full
+          max-w-lg
+          rounded-[32px]
+          border
+          border-white/20
+          bg-gradient-to-br
+          from-[#511D43]
+          via-[#6a2557]
+          to-[#901E3E]
+          shadow-[0_25px_100px_rgba(81,29,67,0.5)]
+        "
+            >
+              <div className="absolute -top-24 -left-24 w-64 h-64 bg-green-500/20 rounded-full blur-3xl animate-pulse" />
+
+              <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse" />
+
+              <div className="relative z-10 p-6 text-white">
+                <div className="flex items-center gap-4">
+                  <div className="w-24 h-24 flex-shrink-0">
+                    <Lottie
+                      animationData={paymentSuccessAnimation}
+                      loop={true}
+                    />
+                  </div>
+
+                  <div className="flex-1 text-left">
+                    <div
+                      className="
+          inline-flex
+          items-center
+          px-3
+          py-1
+          rounded-full
+          bg-green-500/20
+          text-green-300
+          text-xs
+          font-semibold
+          mb-2
+        "
+                    >
+                      Subscription Activated
+                    </div>
+
+                    <h2 className="text-2xl font-bold">Payment Successful</h2>
+
+                    <p className="text-sm text-white/70 mt-1">
+                      Your subscription has been activated successfully.
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className="
+      mt-5
+      rounded-2xl
+      bg-white/10
+      backdrop-blur-xl
+      border
+      border-white/10
+      p-4
+    "
+                >
+                  <div className="flex justify-between py-2">
+                    <span className="text-white/60">Plan</span>
+
+                    <span className="font-semibold">{paidPlan?.name}</span>
+                  </div>
+
+                  <div className="flex justify-between py-2">
+                    <span className="text-white/60">Amount Paid</span>
+
+                    <span className="font-semibold text-green-300">
+                      ₹{paidPlan?.price?.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between py-2">
+                    <span className="text-white/60">Status</span>
+
+                    <span className="font-semibold text-green-300">Active</span>
+                  </div>
+                </div>
+
+                <div
+                  className="
+      mt-4
+      flex
+      items-center
+      gap-2
+      text-xs
+      text-white/60
+    "
+                >
+                  <CheckCircle size={14} />
+                  Invoice & confirmation email sent successfully
+                </div>
+
+                <button
+                  onClick={() => {
+                    setPaymentSuccess(false);
+                    setSelectedPlan(null);
+                  }}
+                  className="
+      mt-5
+      w-full
+      py-3
+      rounded-2xl
+      bg-white
+      text-[#511D43]
+      font-semibold
+      hover:scale-[1.02]
+      transition-all
+    "
+                >
+                  Continue
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* ================= LOADER MODAL ================= */}
+
+      <AnimatePresence>
+        {verifyingPayment && (
+          <motion.div
+            className="
+        fixed
+        inset-0
+        z-[100000]
+        flex
+        items-center
+        justify-center
+        bg-black/70
+        backdrop-blur-md
+        p-4
+      "
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -297,81 +625,51 @@ export default function Pricing() {
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
-              className="bg-gradient-to-br from-[#511D43] to-[#901E3E] p-6 md:p-10 rounded-2xl md:rounded-3xl w-full max-w-md border border-white/20 shadow-2xl text-white"
+              className="
+          w-full
+          max-w-md
+          rounded-3xl
+          overflow-hidden
+          border
+          border-white/20
+          bg-gradient-to-br
+          from-[#511D43]
+          via-[#6a2557]
+          to-[#901E3E]
+          text-white
+          text-center
+          p-8
+        "
             >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg md:text-2xl font-bold">
-                  {selectedPlan.name}
-                </h3>
-
-                <X
-                  onClick={() => setSelectedPlan(null)}
-                  className="cursor-pointer"
-                />
-              </div>
-              {/* 
-              <p className="mb-6 text-sm md:text-base">
-              </p> */}
-              <div className="bg-white/10 rounded-2xl p-4 mb-6">
-                <div className="flex justify-between mb-2">
-                  <span>Plan Amount</span>
-
-                  <span>₹{selectedPlan.price.toLocaleString()}</span>
-                </div>
-
-                <div className="flex justify-between mb-2">
-                  <span>CGST (9%)</span>
-
-                  <span>₹{(selectedPlan.price * 0.09).toFixed(2)}</span>
-                </div>
-
-                <div className="flex justify-between mb-2">
-                  <span>SGST (9%)</span>
-
-                  <span>₹{(selectedPlan.price * 0.09).toFixed(2)}</span>
-                </div>
-
-                <div className="border-t border-white/20 pt-3 mt-3 flex justify-between text-xl font-bold">
-                  <span>Total Payable</span>
-
-                  <span>₹{(selectedPlan.price * 1.18).toFixed(2)}</span>
-                </div>
+              <div className="w-40 h-40 mx-auto">
+                <Lottie animationData={UploadingAnimation} loop />
               </div>
 
-              <button
-                onClick={handlePayment}
-                className="w-full py-2 md:py-3 rounded-lg md:rounded-xl bg-white text-[#511D43] font-semibold hover:bg-white/90 transition-all"
-              >
-                Proceed to Payment
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <h2 className="text-2xl font-bold">Verifying Payment</h2>
 
-      {/* ================= SUCCESS MODAL ================= */}
+              <p className="text-white/70 mt-3">
+                Please wait while we confirm your payment and activate your
+                subscription.
+              </p>
 
-      <AnimatePresence>
-        {paymentSuccess && (
-          <motion.div
-            className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 px-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              className="bg-white p-6 md:p-10 rounded-2xl text-center max-w-sm w-full"
-            >
-              <CheckCircle className="mx-auto text-green-500 w-12 h-12 mb-4" />
+              <div className="mt-6">
+                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-green-400"
+                    animate={{
+                      x: ["-100%", "300%"],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                  />
+                </div>
+              </div>
 
-              <h3 className="text-lg md:text-xl font-bold mb-2">
-                Payment Successful
-              </h3>
-
-              <p className="text-gray-600 text-sm">
-                Thank you for choosing AG & Associates
+              <p className="text-xs text-white/50 mt-4">
+                Do not close this window
               </p>
             </motion.div>
           </motion.div>

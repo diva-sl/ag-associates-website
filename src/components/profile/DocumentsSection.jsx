@@ -8,6 +8,13 @@ import {
   FileCheck,
 } from "lucide-react";
 
+import Lottie from "lottie-react";
+
+import SuccessAnimation from "../../assets/lottie/Success.json";
+import PendingAnimation from "../../assets/lottie/pending.json";
+import FailedAnimation from "../../assets/lottie/Failed Status.json";
+import UploadingAnimation from "../../assets/lottie/Uploading.json";
+
 const DocumentsSection = ({
   documents,
   handleDocumentUpload,
@@ -141,7 +148,7 @@ const DocumentsSection = ({
                     </span>
 
                     {/* <span className="text-xs text-slate-400">Uploaded</span> */}
-                    <span
+                    {/* <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold ${
                         doc.status === "approved"
                           ? "bg-green-100 text-green-700"
@@ -151,7 +158,9 @@ const DocumentsSection = ({
                       }`}
                     >
                       {doc.status}
-                    </span>
+                      
+                    </span> */}
+                    <DocumentStatus status={doc.status} />
                   </div>
 
                   <p className="mt-4 text-sm text-slate-500">
@@ -228,6 +237,8 @@ const DocumentsSection = ({
   );
 };
 
+export default DocumentsSection;
+
 /* ================= UPLOAD CARD ================= */
 
 const UploadCard = ({ title, subtitle, onChange }) => (
@@ -255,4 +266,74 @@ const UploadCard = ({ title, subtitle, onChange }) => (
   </label>
 );
 
-export default DocumentsSection;
+const DocumentStatus = ({ status }) => {
+  const statusConfig = {
+    approved: {
+      title: "Approved",
+      text: "Document Verified",
+      animation: SuccessAnimation,
+      className:
+        "bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-700",
+    },
+
+    pending: {
+      title: "Pending",
+      text: "Under Review",
+      animation: PendingAnimation,
+      className:
+        "bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200 text-amber-700",
+    },
+
+    rejected: {
+      title: "Rejected",
+      text: "Action Required",
+      animation: FailedAnimation,
+      className:
+        "bg-gradient-to-r from-red-50 to-rose-50 border-red-200 text-red-700",
+    },
+
+    uploading: {
+      title: "Uploading",
+      text: "Please Wait",
+      animation: UploadingAnimation,
+      className:
+        "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700",
+    },
+  };
+
+  const current = statusConfig[status?.toLowerCase()] || statusConfig.pending;
+
+  return (
+    <div
+      className={`
+        flex
+        items-center
+        gap-2
+        rounded-2xl
+        border
+        px-3
+        py-2
+        ${current.className}
+      `}
+    >
+      <div className="w-10 h-10 flex-shrink-0">
+        <Lottie
+          animationData={current.animation}
+          loop={true}
+          autoplay={true}
+          rendererSettings={{
+            preserveAspectRatio: "xMidYMid meet",
+          }}
+        />
+      </div>
+
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-wide">
+          {current.title}
+        </p>
+
+        <p className="text-[10px] opacity-80">{current.text}</p>
+      </div>
+    </div>
+  );
+};

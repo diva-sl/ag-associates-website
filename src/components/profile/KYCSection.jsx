@@ -10,6 +10,13 @@ import {
 
 import { motion } from "framer-motion";
 
+import Lottie from "lottie-react";
+
+import SuccessAnimation from "../../assets/lottie/Success.json";
+import PendingAnimation from "../../assets/lottie/pending.json";
+import FailedAnimation from "../../assets/lottie/Failed Status.json";
+import UploadingAnimation from "../../assets/lottie/Uploading.json";
+
 const KYCSection = ({ user, editing, formData, setFormData }) => {
   const maskedAadhaar =
     user?.aadhaar && user.aadhaar.length === 12
@@ -323,7 +330,7 @@ const VerificationStatus = ({ icon, title, value, status, rejectReason }) => {
           </div>
         </div>
 
-        <div
+        {/* <div
           className={`
             px-3
             py-2
@@ -338,7 +345,8 @@ const VerificationStatus = ({ icon, title, value, status, rejectReason }) => {
         >
           {currentStatus.icon}
           {currentStatus.label}
-        </div>
+        </div> */}
+        <KycAnimatedStatus status={status} />
       </div>
 
       {/* Rejection Reason */}
@@ -382,6 +390,76 @@ const VerificationStatus = ({ icon, title, value, status, rejectReason }) => {
           Verified and approved by compliance team
         </div>
       )}
+    </div>
+  );
+};
+
+const KycAnimatedStatus = ({ status }) => {
+  const config = {
+    approved: {
+      title: "Verified",
+      animation: SuccessAnimation,
+      bg: "bg-green-50 border-green-200",
+      text: "text-green-700",
+    },
+
+    pending: {
+      title: "Reviewing",
+      animation: PendingAnimation,
+      bg: "bg-amber-50 border-amber-200",
+      text: "text-amber-700",
+    },
+
+    rejected: {
+      title: "Rejected",
+      animation: FailedAnimation,
+      bg: "bg-red-50 border-red-200",
+      text: "text-red-700",
+    },
+
+    not_uploaded: {
+      title: "Not Uploaded",
+      animation: UploadingAnimation,
+      bg: "bg-slate-50 border-slate-200",
+      text: "text-slate-600",
+    },
+  };
+
+  const current = config[status] || config.not_uploaded;
+
+  return (
+    <div
+      className={`
+        flex
+        items-center
+        gap-2
+        px-3
+        py-2
+        rounded-2xl
+        border
+        ${current.bg}
+      `}
+    >
+      <div className="w-10 h-10">
+        <Lottie
+          animationData={current.animation}
+          loop={true}
+          autoplay={true}
+          rendererSettings={{
+            preserveAspectRatio: "xMidYMid meet",
+          }}
+        />
+      </div>
+
+      <span
+        className={`
+          text-xs
+          font-bold
+          ${current.text}
+        `}
+      >
+        {current.title}
+      </span>
     </div>
   );
 };

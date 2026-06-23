@@ -9,6 +9,7 @@ import { logout } from "@/redux/slices/authSlice";
 import logo from "../assets/ag-logo.png";
 
 const Header = () => {
+  const { token, user } = useSelector((state) => state.auth);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [dropdown, setDropdown] = useState(false);
@@ -17,10 +18,21 @@ const Header = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const drawerRef = useRef();
+  const dropdownRef = useRef(null);
+  const profileFields = [
+    user?.name,
+    user?.email,
+    user?.phone,
+    user?.pan,
+    user?.aadhaar,
+    user?.address,
+  ];
+
+  const completion = Math.round(
+    (profileFields.filter(Boolean).length / profileFields.length) * 100,
+  );
 
   const [resourcesOpen, setResourcesOpen] = useState(false);
-
-  const { token, user } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -51,6 +63,18 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
   /* ================= SCROLL TO SECTION ================= */
   const scrollToSection = (sectionId) => {
     if (location.pathname !== "/") {
@@ -73,7 +97,6 @@ const Header = () => {
       year: "numeric",
     });
   };
-
   const getSubscriptionColor = (sub) => {
     switch (sub) {
       case "premium":
@@ -116,9 +139,15 @@ const Header = () => {
                 alt="AG & Associates"
                 className="h-12 w-12 object-contain"
               />
-              <span className="text-xl font-bold text-white tracking-wide">
-                AG & ASSOCIATES
-              </span>
+              <div>
+                <h1 className="font-bold text-white leading-none">
+                  AG & ASSOCIATES
+                </h1>
+
+                <p className="text-[10px] text-white/60 tracking-widest">
+                  TAX • GST • COMPLIANCE
+                </p>
+              </div>
             </motion.button>
 
             {/* ================= DESKTOP NAV ================= */}
@@ -126,7 +155,11 @@ const Header = () => {
               {navLinks.map((item) => {
                 if (item.dropdown) {
                   return (
-                    <div key={item.name} className="relative group">
+                    <div
+                      key={item.name}
+                      ref={dropdownRef}
+                      className="relative group"
+                    >
                       <button
                         className="
             flex
@@ -194,7 +227,15 @@ const Header = () => {
                   <Link
                     key={item.name}
                     to={item.link}
-                    className="text-white font-medium"
+                    className={`
+font-medium
+transition-all
+${
+  location.pathname === item.link
+    ? "text-white"
+    : "text-white/70 hover:text-white"
+}
+`}
                   >
                     {item.name}
                   </Link>
@@ -202,7 +243,15 @@ const Header = () => {
                   <button
                     key={item.name}
                     onClick={() => scrollToSection(item.id)}
-                    className="text-white font-medium"
+                    className={`
+font-medium
+transition-all
+${
+  location.pathname === item.link
+    ? "text-white"
+    : "text-white/70 hover:text-white"
+}
+`}
                   >
                     {item.name}
                   </button>
@@ -224,33 +273,246 @@ const Header = () => {
 
               {/* Auth */}
               {token ? (
-                <div className="relative">
-                  <div
+                <div className="relative" ref={dropdownRef}>
+                  <button
                     onClick={() => setDropdown(!dropdown)}
-                    className="w-10 h-10 rounded-full bg-white text-purple-700 flex items-center justify-center font-bold cursor-pointer shadow-md"
+                    className="
+      flex
+      items-center
+      gap-3
+      bg-white/10
+      backdrop-blur-xl
+      border
+      border-white/20
+      rounded-full
+      px-2
+      py-2
+      hover:bg-white/20
+      transition-all
+      duration-300
+      shadow-lg
+    "
                   >
-                    {/* {user?.name?.charAt(0)?.toUpperCase() || "U"} */}
-                    {user?.name?.[0]?.toUpperCase() ||
-                      user?.email?.[0]?.toUpperCase() ||
-                      "U"}
-                  </div>
+                    {user?.avatar ? (
+                      <img
+                        src={user?.avatar}
+                        alt={user?.name}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          e.target.src = "/default-avatar.png";
+                        }}
+                        className="
+    w-11
+    h-11
+    rounded-full
+    object-cover
+    border-2
+    border-white
+  "
+                      />
+                    ) : (
+                      <div
+                        className="
+          w-11
+          h-11
+          rounded-full
+          bg-white
+          text-[#511D43]
+          flex
+          items-center
+          justify-center
+          font-bold
+        "
+                      >
+                        {user?.name?.[0]?.toUpperCase() ||
+                          user?.email?.[0]?.toUpperCase() ||
+                          "U"}
+                      </div>
+                    )}
+
+                    <div className="hidden xl:block text-left">
+                      <p className="text-white text-sm font-semibold truncate max-w-[140px]">
+                        {user?.name}
+                      </p>
+
+                      <p className="text-white/60 text-xs">
+                        {user?.subscription?.toUpperCase() || "FREE"}
+                      </p>
+                    </div>
+
+                    <ChevronDown
+                      size={16}
+                      className={`text-white transition-all ${
+                        dropdown ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
 
                   {dropdown && (
-                    <div className="absolute right-0 mt-3 bg-white text-black rounded-xl shadow-2xl w-44 py-2">
-                      <Link
-                        to="/profile"
-                        className="block px-4 py-2 hover:bg-gray-100"
-                        onClick={() => setDropdown(false)}
-                      >
-                        Profile
-                      </Link>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                      >
-                        Logout
-                      </button>
-                    </div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="
+        absolute
+        right-0
+        mt-4
+        w-80
+        overflow-hidden
+        rounded-3xl
+        bg-white
+        shadow-[0_20px_60px_rgba(0,0,0,0.25)]
+        border
+        border-slate-100
+      "
+                    >
+                      {/* User Header */}
+                      <div className="p-5 bg-gradient-to-r from-[#511D43] to-[#901E3E] text-white">
+                        <div className="flex items-center gap-3">
+                          {user?.avatar ? (
+                            <img
+                              src={user?.avatar}
+                              alt={user?.name}
+                              loading="lazy"
+                              referrerPolicy="no-referrer"
+                              onError={(e) => {
+                                e.target.src = "/default-avatar.png";
+                              }}
+                              className="
+    w-11
+    h-11
+    rounded-full
+    object-cover
+    border-2
+    border-white
+  "
+                            />
+                          ) : (
+                            <div className="w-14 h-14 rounded-full bg-white text-[#511D43] flex items-center justify-center font-bold">
+                              {user?.name?.[0]?.toUpperCase()}
+                            </div>
+                          )}
+
+                          <div className="flex-1">
+                            <h4 className="font-semibold truncate">
+                              {user?.name}
+                            </h4>
+
+                            <p className="text-xs text-white/70 truncate">
+                              {user?.email}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 flex items-center justify-between">
+                          <span
+                            className={`
+              px-3
+              py-1
+              rounded-full
+              text-xs
+              font-semibold
+              ${getSubscriptionColor(user?.subscription)}
+            `}
+                          >
+                            {user?.subscription?.toUpperCase() || "FREE"}
+                          </span>
+
+                          {user?.subscriptionExpiry && (
+                            <span className="text-xs text-white/70">
+                              {formatDate(user.subscriptionExpiry)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Profile Completion */}
+                      <div className="p-5 border-b">
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="font-medium">
+                            Profile Completion
+                          </span>
+
+                          <span className="font-semibold">{completion}%</span>
+                        </div>
+
+                        <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                          <div
+                            className="
+              h-full
+              bg-gradient-to-r
+              from-[#511D43]
+              to-[#901E3E]
+            "
+                            style={{
+                              width: `${completion}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Verification Status */}
+                      <div className="p-5 border-b">
+                        <div className="flex flex-wrap gap-2">
+                          {user?.panStatus === "approved" && (
+                            <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
+                              ✓ PAN Verified
+                            </span>
+                          )}
+
+                          {user?.aadhaarStatus === "approved" && (
+                            <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
+                              ✓ Aadhaar Verified
+                            </span>
+                          )}
+
+                          {user?.gstinStatus === "approved" && (
+                            <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
+                              ✓ GST Verified
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Menu */}
+                      <div className="py-2">
+                        <Link
+                          to="/profile"
+                          onClick={() => setDropdown(false)}
+                          className="
+            flex
+            items-center
+            gap-3
+            px-5
+            py-3
+            hover:bg-slate-50
+            transition
+          "
+                        >
+                          <User size={18} />
+                          My Profile
+                        </Link>
+
+                        <button
+                          onClick={handleLogout}
+                          className="
+            w-full
+            flex
+            items-center
+            gap-3
+            px-5
+            py-3
+            text-red-600
+            hover:bg-red-50
+            transition
+          "
+                        >
+                          <LogOut size={18} />
+                          Logout
+                        </button>
+                      </div>
+                    </motion.div>
                   )}
                 </div>
               ) : (
@@ -299,7 +561,7 @@ const Header = () => {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 260, damping: 25 }}
-              className="fixed top-0 right-0 h-full w-72 bg-[#511D43] z-50 shadow-2xl p-6 flex flex-col"
+              className="fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-[#511D43] z-50 shadow-2xl p-6 flex flex-col"
             >
               <div className="flex justify-between items-center mb-8">
                 {/* <span className="text-white font-bold text-lg">Menu</span> */}
@@ -315,9 +577,21 @@ const Header = () => {
                     {/* Avatar */}
                     {user?.avatar ? (
                       <img
-                        src={user.avatar}
-                        alt="avatar"
-                        className="w-12 h-12 rounded-full object-cover border-2 border-white"
+                        src={user?.avatar}
+                        alt={user?.name}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          e.target.src = "/default-avatar.png";
+                        }}
+                        className="
+    w-11
+    h-11
+    rounded-full
+    object-cover
+    border-2
+    border-white
+  "
                       />
                     ) : (
                       <div className="w-12 h-12 rounded-full bg-white text-purple-700 flex items-center justify-center font-bold text-lg">
@@ -360,6 +634,58 @@ const Header = () => {
                             ).toLocaleDateString()}
                           </span>
                         )}
+                      <div className="flex gap-2 mt-2 flex-wrap">
+                        {user?.panStatus === "approved" && (
+                          <span
+                            className="
+        text-[10px]
+        bg-green-500/20
+        text-green-300
+        px-2
+        py-1
+        rounded-full
+        border
+        border-green-500/20
+      "
+                          >
+                            ✓ PAN Verified
+                          </span>
+                        )}
+
+                        {user?.aadhaarStatus === "approved" && (
+                          <span
+                            className="
+        text-[10px]
+        bg-green-500/20
+        text-green-300
+        px-2
+        py-1
+        rounded-full
+        border
+        border-green-500/20
+      "
+                          >
+                            ✓ Aadhaar Verified
+                          </span>
+                        )}
+
+                        {user?.gstinStatus === "approved" && (
+                          <span
+                            className="
+        text-[10px]
+        bg-green-500/20
+        text-green-300
+        px-2
+        py-1
+        rounded-full
+        border
+        border-green-500/20
+      "
+                          >
+                            ✓ GST Verified
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
