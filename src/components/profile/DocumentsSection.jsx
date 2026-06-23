@@ -208,20 +208,29 @@ const DocumentsSection = ({
                     >
                       <Download size={16} />
                     </button>
-                    {doc.status !== "approved" && doc.status !== "pending" && (
+                    {doc.status !== "approved" && (
                       <button
                         onClick={() => deleteDocument(doc._id)}
-                        className="
-                        w-11
-                        h-11
-                        rounded-xl
-                        bg-red-50
-                        text-red-600
-                        hover:bg-red-100
-                        flex
-                        items-center
-                        justify-center
-                      "
+                        disabled={doc.status === "approved"}
+                        title={
+                          doc.status === "approved"
+                            ? "Approved documents cannot be deleted"
+                            : "Delete document"
+                        }
+                        className={`
+    w-11
+    h-11
+    rounded-xl
+    flex
+    items-center
+    justify-center
+    transition-all
+    ${
+      doc.status === "approved"
+        ? "bg-slate-100 text-slate-300 cursor-not-allowed"
+        : "bg-red-50 text-red-600 hover:bg-red-100"
+    }
+  `}
                       >
                         <Trash2 size={16} />
                       </button>

@@ -28,6 +28,10 @@ const Header = () => {
     user?.address,
   ];
 
+  const [avatarError, setAvatarError] = useState(false);
+
+  const avatar =
+    !avatarError && (user?.avatar || user?.picture || user?.photoURL);
   const completion = Math.round(
     (profileFields.filter(Boolean).length / profileFields.length) * 100,
   );
@@ -293,15 +297,13 @@ ${
       shadow-lg
     "
                   >
-                    {user?.avatar ? (
+                    {avatar ? (
                       <img
-                        src={user?.avatar}
+                        src={avatar}
                         alt={user?.name}
                         loading="lazy"
                         referrerPolicy="no-referrer"
-                        onError={(e) => {
-                          e.target.src = "/default-avatar.png";
-                        }}
+                        onError={(e) => setAvatarError(true)}
                         className="
     w-11
     h-11
@@ -370,15 +372,13 @@ ${
                       {/* User Header */}
                       <div className="p-5 bg-gradient-to-r from-[#511D43] to-[#901E3E] text-white">
                         <div className="flex items-center gap-3">
-                          {user?.avatar ? (
+                          {avatar ? (
                             <img
-                              src={user?.avatar}
+                              src={avatar}
                               alt={user?.name}
                               loading="lazy"
                               referrerPolicy="no-referrer"
-                              onError={(e) => {
-                                e.target.src = "/default-avatar.png";
-                              }}
+                              onError={(e) => setAvatarError(true)}
                               className="
     w-11
     h-11
@@ -575,15 +575,13 @@ ${
                 {token && (
                   <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 mb-6 flex items-center gap-3 border border-white/20">
                     {/* Avatar */}
-                    {user?.avatar ? (
+                    {avatar ? (
                       <img
-                        src={user?.avatar}
+                        src={avatar}
                         alt={user?.name}
                         loading="lazy"
                         referrerPolicy="no-referrer"
-                        onError={(e) => {
-                          e.target.src = "/default-avatar.png";
-                        }}
+                        onError={(e) => setAvatarError(true)}
                         className="
     w-11
     h-11
