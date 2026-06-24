@@ -47,15 +47,6 @@ export default function AuthPage() {
 
   /* ================= SUBMIT ================= */
 
-  useEffect(() => {
-    const BASE_URL =
-      import.meta.env.MODE === "production"
-        ? "https://ag-associates-backend.onrender.com"
-        : "http://localhost:5001";
-
-    fetch(BASE_URL).catch(() => {});
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -67,8 +58,16 @@ export default function AuthPage() {
         ? await login(form).unwrap()
         : await register(form).unwrap();
 
-      dispatch(setCredentials(response));
+      dispatch(
+        setCredentials({
+          user: response.user,
+          token: response.token,
+        }),
+      );
+
       localStorage.setItem("authToken", response.token);
+
+      localStorage.setItem("user", JSON.stringify(response.user));
 
       const redirect = new URLSearchParams(location.search).get("redirect");
 
@@ -84,40 +83,15 @@ export default function AuthPage() {
     }
   };
 
-  // const handleGoogle = () => {
-  //   const API_URL =
-  //     import.meta.env.MODE === "production"
-  //       ? "https://ag-associates-backend.onrender.com/api"
-  //       : "http://localhost:5001/api";
-
-  //   const redirect = new URLSearchParams(location.search).get("redirect");
-
-  //   window.location.href = `${API_URL}/auth/google?redirect=${redirect || ""}`;
-  // };
-
-  const handleGoogle = async () => {
+  const handleGoogle = () => {
     const API_URL =
       import.meta.env.MODE === "production"
-        ? "https://ag-associates-backend.onrender.com/api"
+        ? "https://api.agandassociates.org/api"
         : "http://localhost:5001/api";
-
-    const BASE_URL =
-      import.meta.env.MODE === "production"
-        ? "https://ag-associates-backend.onrender.com"
-        : "http://localhost:5001";
 
     const redirect = new URLSearchParams(location.search).get("redirect");
 
-    try {
-      await fetch(BASE_URL);
-      await fetch(BASE_URL);
-
-      await new Promise((res) => setTimeout(res, 2500));
-
-      window.location.href = `${API_URL}/auth/google?redirect=${redirect || ""}`;
-    } catch (err) {
-      window.location.href = `${API_URL}/auth/google?redirect=${redirect || ""}`;
-    }
+    window.location.href = `${API_URL}/auth/google?redirect=${redirect || ""}`;
   };
 
   return (

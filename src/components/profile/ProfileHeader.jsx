@@ -7,6 +7,8 @@ import {
   Clock,
 } from "lucide-react";
 
+import { motion } from "framer-motion";
+
 const ProfileHeader = ({ user, handleAvatarUpload, handleRemoveAvatar }) => {
   const initials =
     user?.name

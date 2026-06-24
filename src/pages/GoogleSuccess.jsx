@@ -12,15 +12,17 @@ export default function GoogleSuccess() {
     const params = new URLSearchParams(location.search);
 
     const token = params.get("token");
-    const name = params.get("name");
-    const email = params.get("email");
-    const avatar = params.get("avatar");
+
+    const userData = params.get("user");
+
     const redirect = params.get("redirect");
 
-    if (token) {
-      const user = { name, email, avatar };
+    if (token && userData) {
+      const user = JSON.parse(decodeURIComponent(userData));
 
       localStorage.setItem("authToken", token);
+
+      localStorage.setItem("user", JSON.stringify(user));
 
       dispatch(
         setCredentials({
@@ -29,13 +31,9 @@ export default function GoogleSuccess() {
         }),
       );
 
-      if (redirect) {
-        navigate(`/${redirect}`);
-      } else {
-        navigate("/");
-      }
+      navigate(redirect ? `/${redirect}` : "/");
     }
-  }, [location, dispatch, navigate]);
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#511D43] to-[#901E3E] text-white">

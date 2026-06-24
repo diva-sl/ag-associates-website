@@ -37,6 +37,23 @@ const DocumentsSection = ({
 
       <div className="grid md:grid-cols-3 gap-5 mb-10">
         <UploadCard
+          title="Income Tax Return"
+          subtitle="Upload ITR"
+          onChange={(e) => handleDocumentUpload(e, "ITR")}
+        />
+
+        <UploadCard
+          title="Bank Statement"
+          subtitle="Upload Bank Statement"
+          onChange={(e) => handleDocumentUpload(e, "BANK_STATEMENT")}
+        />
+        <UploadCard
+          title="FORM 16"
+          subtitle="Upload Form 16"
+          onChange={(e) => handleDocumentUpload(e, "BANK_STATEMENT")}
+        />
+
+        <UploadCard
           title="PAN Card"
           subtitle="Upload PAN Document"
           onChange={(e) => handleDocumentUpload(e, "PAN_CARD")}
@@ -52,12 +69,6 @@ const DocumentsSection = ({
           title="GST Certificate"
           subtitle="Upload GST Document"
           onChange={(e) => handleDocumentUpload(e, "GST_CERTIFICATE")}
-        />
-
-        <UploadCard
-          title="Income Tax Return"
-          subtitle="Upload ITR"
-          onChange={(e) => handleDocumentUpload(e, "ITR")}
         />
 
         <UploadCard
